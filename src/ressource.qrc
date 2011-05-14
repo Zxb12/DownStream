@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="icon">res/download_manager.png</file>
+    </qresource>
+</RCC>
