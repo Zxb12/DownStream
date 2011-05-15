@@ -1,5 +1,6 @@
 #include "fenoptions.h"
 #include "ui_fenoptions.h"
+#include "enums.h"
 
 #include <QFileDialog>
 
@@ -9,7 +10,7 @@ FenOptions::FenOptions(QWidget *parent, QDir *dir, QByteArray *login, QByteArray
     QDialog(parent), ui(new Ui::FenOptions), m_dir(dir), m_login(login), m_password(password)
 {
     ui->setupUi(this);
-    setWindowTitle(parent->windowTitle());
+    setWindowTitle(APP_NAME);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveOptions()));
 

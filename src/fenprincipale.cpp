@@ -13,6 +13,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
         m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
+    setWindowTitle(APP_NAME " - v" VERSION);
     m_tray = new QSystemTrayIcon(windowIcon(), this);
     m_tray->show();
     qApp->setActiveWindow(this);
@@ -62,7 +63,7 @@ void FenPrincipale::on_btn_ajouter_clicked()
     }
     else
     {
-        QMessageBox::warning(this, windowTitle(), "Le lien que vous avez entré n'est pas un lien Megaupload valide !");
+        QMessageBox::warning(this, APP_NAME, "Le lien que vous avez entré n'est pas un lien Megaupload valide !");
     }
 }
 
@@ -107,7 +108,7 @@ void FenPrincipale::console(QString out)
     ui->statusBar->showMessage(out);
 
     if (!qApp->focusWidget())
-        m_tray->showMessage(windowTitle(), out);
+        m_tray->showMessage(APP_NAME, out);
 }
 
 void FenPrincipale::clipboardChange()
@@ -156,7 +157,7 @@ void FenPrincipale::loadSettings()
     m_dir = settings.value("destDir", QDir::home().absolutePath()).toString();
     if (settings.value("firstRun", true).toBool())
     {
-        QMessageBox::information(this, windowTitle(), "Ceci est le premier lancement de l'application. Veuillez entrer vos paramètres !");
+        QMessageBox::information(this, APP_NAME, "Ceci est le premier lancement de l'application. Veuillez entrer vos paramètres !");
         on_options_clicked();
     }
 }
