@@ -68,7 +68,7 @@ void Download::startDownload(const QUrl &url)
         emit error(FILE_COULD_NOT_BE_OPENED);
         return;
     }
-    if (m_size > m_file.size())
+    if (m_size && m_size < m_file.size())
     {
         emit error(FILE_CORRUPT_RESTART_DOWNLOAD);
         m_startPos = 0;
