@@ -32,7 +32,7 @@ FORMS    += src/fenprincipale.ui \
     src/fenoptions.ui
 
 RESOURCES += \
-    src/ressource.qrc
+    res/ressource.qrc
 
 OTHER_FILES += \
     TODO.txt \
