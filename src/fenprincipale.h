@@ -76,6 +76,7 @@ private:
     QString m_currentDownload;
     QTimer *m_waitTimer, *m_updateDownloadTimer;
     int m_waitTime, m_pos, m_total;
+    bool m_isDownloading;
 };
 
 #endif // FENPRINCIPALE_H

@@ -10,7 +10,7 @@
 FenPrincipale::FenPrincipale(QWidget *parent) :
         QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
         m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
-        m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0)
+        m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
     m_tray = new QSystemTrayIcon(windowIcon(), this);
@@ -84,6 +84,7 @@ void FenPrincipale::on_btn_go_clicked()
 
 void FenPrincipale::on_btn_arreter_clicked()
 {
+    m_isDownloading = false;
     m_handler->stopDownload();
     m_updateDownloadTimer->stop();
     m_waitTimer->stop();
@@ -252,8 +253,10 @@ void FenPrincipale::startNextDownload()
 
 void FenPrincipale::updateDownload(qint64 pos, qint64 total)
 {
-    if (m_pos)  //Evite les vitesses très élevées affichées lors de la reprise d'un téléchargement
+    if (m_isDownloading)  //Evite les vitesses très élevées affichées lors de la reprise d'un téléchargement
         *m_vitesseTransfert << (pos - ui->progression->value()); //Différence = nbr d'octets écrits
+    else
+        m_isDownloading = true;
 
     m_pos = pos;
     m_total = total;
@@ -274,13 +277,14 @@ void FenPrincipale::updateDownloadTick()
 
 void FenPrincipale::downloadComplete()
 {
+    m_isDownloading = false;
     m_currentDownload.clear();
-
     startNextDownload();
 }
 
 void FenPrincipale::error(DownloadError error)
 {
+    m_isDownloading = false;
     switch (error)
     {
     case LINK_NETWORK_ERROR:
