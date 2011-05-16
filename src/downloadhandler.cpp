@@ -3,8 +3,8 @@
 #include <QDebug>
 
 DownloadHandler::DownloadHandler(QObject *parent) :
-        QObject(parent), m_authInfo(), m_url(), m_downloadUrl(), m_timer(new QTimer(this)),
-        m_linkExtractor(new LinkExtractor(this)), m_download(new Download(this)), m_dir()
+    QObject(parent), m_authInfo(), m_url(), m_downloadUrl(), m_timer(new QTimer(this)),
+    m_linkExtractor(new LinkExtractor(this)), m_download(new Download(this)), m_dir()
 {
     m_timer->setSingleShot(true);
 
@@ -50,8 +50,7 @@ void DownloadHandler::linkAvailable(QUrl url)
     qDebug() << "Lien de téléchargement trouvé !" << url;
 
     m_downloadUrl = url;
-    m_timer->start(m_authInfo.level * IN_MILLISECONDS);
-    emit waitTime(m_authInfo.level);
+    wait(m_authInfo.level, SLOT(startDownload()));
 }
 
 void DownloadHandler::restartLinkExtraction()
@@ -86,11 +85,13 @@ void DownloadHandler::downloadError(DownloadError err)
     switch (err)
     {
     case DOWNLOAD_NETWORK_ERROR:
-    case DOWNLOAD_EMPTY:
         wait(RETRY_TIMER, SLOT(restartDownload()));
         break;
+    case DOWNLOAD_EMPTY:
+        restartLinkExtraction();
+        break;
     case DOWNLOAD_LIMIT_REACHED:
-        wait(LIMIT_REACHED_TIMER, SLOT(restartDownload()));
+        wait(LIMIT_REACHED_TIMER, SLOT(restartLinkExtraction()));
         break;
     case LINK_NETWORK_ERROR:
         wait(RETRY_TIMER, SLOT(restartLinkExtraction()));

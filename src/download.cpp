@@ -4,7 +4,7 @@
 #include <QDebug>
 
 Download::Download(QObject *parent) :
-        QObject(parent), m_url(), m_startPos(0), m_pos(0), m_size(0), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL), m_dir(), m_file()
+    QObject(parent), m_url(), m_startPos(0), m_pos(0), m_size(0), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL), m_dir(), m_file()
 {
 }
 
@@ -54,6 +54,8 @@ void Download::startDownload(const QUrl &url)
     if (m_file.isOpen())
         m_file.close();
 
+    qDebug() << "startDownload() m_pos = " << m_pos << ", m_startPos = " << m_startPos << ", m_size = " << m_size;
+
     Q_ASSERT(!m_url.isEmpty());
 
     //Ouverture du fichier
@@ -86,7 +88,6 @@ void Download::startDownload(const QUrl &url)
 
     connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(recvData(qint64, qint64)));
     connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
-    connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(downloadError(QNetworkReply::NetworkError)));
 }
 
 void Download::stopDownload()
@@ -99,6 +100,16 @@ void Download::stopDownload()
 }
 void Download::recvData(qint64 pos, qint64 size)
 {
+    if (!size)  //size == 0 dans certains cas d'erreur invisibles par m_reply->error()
+    {
+        emit error(DOWNLOAD_EMPTY);
+        m_reply->abort();
+        return;
+    }
+
+    if (size == -1 || m_reply->error()) //Erreur
+        return;
+
     if (!m_size)
     {
         qDebug() << "Taille du téléchargement : " << size;
@@ -115,8 +126,8 @@ void Download::recvData(qint64 pos, qint64 size)
 
 void Download::downloadFinished()
 {
-    qDebug() << "void Download::downloadFinished() " << m_reply->error() << m_reply->errorString() << ", m_pos = " << m_pos
-            << ", m_startPos = " << m_startPos << ", m_size = " << m_size << ", m_file.pos() = " << m_file.pos();
+    qDebug() << "downloadFinished() " << m_reply->error() << m_reply->errorString() << ", m_pos = " << m_pos
+             << ", m_startPos = " << m_startPos << ", m_size = " << m_size << ", m_file.pos() = " << m_file.pos();
 
     m_startPos = m_file.pos();
 
@@ -124,55 +135,50 @@ void Download::downloadFinished()
     switch (m_reply->error())
     {
     case QNetworkReply::OperationCanceledError: //Téléchargement annulé
-        {
-            qDebug() << "Téléchargement annulé";
-            break;
-        }
+    {
+        qDebug() << "Téléchargement annulé";
+        break;
+    }
     case QNetworkReply::ProtocolUnknownError:   //Download limit exceeded
-        {
-            qDebug() << "Download limit exceeded";
-            emit error(DOWNLOAD_LIMIT_REACHED);
-            break;
-        }
+    {
+        qDebug() << "Download limit exceeded";
+        emit error(DOWNLOAD_LIMIT_REACHED);
+        break;
+    }
     case QNetworkReply::NoError:
+    {
+        writeBuffer();
+
+        if (m_file.pos() == m_startPos)     //Téléchargement vide
         {
-            writeBuffer();
-
-            if (m_pos != m_size)                //Fin de téléchargement prématurée
-            {
-                qDebug() << "Fin de téléchargement prématurée";
-                emit error(DOWNLOAD_NETWORK_ERROR);
-                break;
-            }
-
-            if (m_file.pos() == m_startPos)     //Téléchargement vide
-            {
-                qDebug() << "Téléchargement vide";
-                emit error(DOWNLOAD_EMPTY);
-                break;
-            }
-
-            //Téléchargement terminé !
-            m_startPos = 0, m_pos = 0, m_size = 0;
-            emit finished();
+            qDebug() << "Téléchargement vide";
+            emit error(DOWNLOAD_EMPTY);
             break;
         }
-    default:
+
+        if (m_pos != m_size)                //Fin de téléchargement prématurée
         {
-            qDebug() << "Erreur de téléchargement !" << m_reply->error() << m_reply->errorString();
+            qDebug() << "Fin de téléchargement prématurée";
             emit error(DOWNLOAD_NETWORK_ERROR);
             break;
         }
+
+        //Téléchargement terminé !
+        m_startPos = 0, m_pos = 0, m_size = 0;
+        emit finished();
+        break;
+    }
+    default:
+    {
+        qDebug() << "Erreur de téléchargement !" << m_reply->error() << m_reply->errorString();
+        emit error(DOWNLOAD_NETWORK_ERROR);
+        break;
+    }
     }
 
     m_file.close();
     m_reply->close();
     m_reply = NULL;
-}
-
-void Download::downloadError(QNetworkReply::NetworkError err)
-{
-    qDebug() << "void Download::downloadError() " << err << m_reply->errorString();
 }
 
 bool Download::containsError(const QByteArray &data)

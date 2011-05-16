@@ -1,0 +1,1 @@
+Texte plus explicatif lors de l'attente (entré dans la méthode wait() de DownloadHandler)

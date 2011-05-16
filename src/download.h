@@ -42,7 +42,6 @@ private:
 private slots:
     void recvData(qint64, qint64);
     void downloadFinished();
-    void downloadError(QNetworkReply::NetworkError);
 
 signals:
     void error(DownloadError err);
