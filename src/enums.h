@@ -12,6 +12,9 @@
 #define RETRY_TIMER 10
 #define LIMIT_REACHED_TIMER 60
 
+#define BEFORE_LINK_AVAILABLE   "secondes d'attente"
+#define BEFORE_NEXT_TRY         "secondes avant le prochain essai"
+
 #define DOWNLOAD_SPEED_UPDATE_INTERVAL  1 * IN_MILLISECONDS
 #define DOWNLOAD_SPEED_AVERAGE_TIME     5 * IN_MILLISECONDS
 

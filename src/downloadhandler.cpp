@@ -50,7 +50,7 @@ void DownloadHandler::linkAvailable(QUrl url)
     qDebug() << "Lien de téléchargement trouvé !" << url;
 
     m_downloadUrl = url;
-    wait(m_authInfo.level, SLOT(startDownload()));
+    wait(m_authInfo.level, BEFORE_LINK_AVAILABLE, SLOT(startDownload()));
 }
 
 void DownloadHandler::restartLinkExtraction()
@@ -85,28 +85,28 @@ void DownloadHandler::downloadError(DownloadError err)
     switch (err)
     {
     case DOWNLOAD_NETWORK_ERROR:
-        wait(RETRY_TIMER, SLOT(restartDownload()));
+        wait(RETRY_TIMER, BEFORE_NEXT_TRY, SLOT(restartDownload()));
         break;
     case DOWNLOAD_EMPTY:
         restartLinkExtraction();
         break;
     case DOWNLOAD_LIMIT_REACHED:
-        wait(LIMIT_REACHED_TIMER, SLOT(restartLinkExtraction()));
+        wait(LIMIT_REACHED_TIMER, BEFORE_NEXT_TRY, SLOT(restartLinkExtraction()));
         break;
     case LINK_NETWORK_ERROR:
-        wait(RETRY_TIMER, SLOT(restartLinkExtraction()));
+        wait(RETRY_TIMER, BEFORE_NEXT_TRY, SLOT(restartLinkExtraction()));
 
     default:
         break;
     }
 }
 
-void DownloadHandler::wait(const int& time, const char *slot)
+void DownloadHandler::wait(const int& time, const QString &msg, const char *slot)
 {
     m_timer->stop();
     m_timer->disconnect(this);  //Déconnexion de tous les slots
     connect(m_timer, SIGNAL(timeout()), this, slot);    //Reconnexion au nouveau slot
     m_timer->start(time * IN_MILLISECONDS);
 
-    emit waitTime(time);
+    emit waitTime(time, msg);
 }

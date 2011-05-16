@@ -12,7 +12,7 @@
 
 namespace Ui
 {
-    class FenPrincipale;
+class FenPrincipale;
 }
 
 class FenPrincipale : public QMainWindow
@@ -50,7 +50,7 @@ private slots:
     void error(DownloadError error);
 
     //WaitTimer
-    void waitTimerStart(int);
+    void waitTimerStart(int, QString);
     void waitTimerTick();
 private:
     //Fonctions privées

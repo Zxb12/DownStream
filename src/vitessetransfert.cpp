@@ -1,8 +1,8 @@
 #include "vitessetransfert.h"
 
 VitesseTransfert::VitesseTransfert(QObject *parent, int intervalle, int duree) :
-        QObject(parent), m_timer(this), m_vitesseTransfert(), m_intervalle(intervalle),
-        m_duree(qMax(duree, intervalle)), m_octetsEcrits()
+    QObject(parent), m_timer(this), m_vitesseTransfert(), m_intervalle(intervalle),
+    m_duree(qMax(duree, intervalle)), m_octetsEcrits()
 {
     m_timer.setInterval(m_intervalle);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(updateVitesse()));

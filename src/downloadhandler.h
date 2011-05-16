@@ -37,7 +37,7 @@ private slots:
     void downloadFinished();
     void downloadError(DownloadError err);
 private:
-    void wait(const int& time, const char* slot);
+    void wait(const int& time, const QString &msg, const char* slot);
 
 private:
     //Compte
@@ -54,7 +54,7 @@ private:
 
 signals:
     void error(DownloadError);
-    void waitTime(int);
+    void waitTime(int, QString);
     void downloadProgress(qint64, qint64);
     void finished();
 };

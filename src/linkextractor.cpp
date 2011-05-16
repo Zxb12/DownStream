@@ -7,7 +7,7 @@
 #include <QDebug>
 
 LinkExtractor::LinkExtractor(QObject *parent) :
-        QObject(parent), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
+    QObject(parent), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
 {
 }
 

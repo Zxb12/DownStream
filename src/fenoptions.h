@@ -6,7 +6,7 @@
 
 namespace Ui
 {
-    class FenOptions;
+class FenOptions;
 }
 
 class FenOptions : public QDialog

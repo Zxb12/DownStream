@@ -6,7 +6,7 @@
 #include <QDebug>
 
 Auth::Auth(QObject *parent) :
-        QObject(parent), m_authLevel(GUEST), m_cookieJar(new QNetworkCookieJar(this)), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
+    QObject(parent), m_authLevel(GUEST), m_cookieJar(new QNetworkCookieJar(this)), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
 {
 }
 
@@ -76,45 +76,45 @@ void Auth::replyError(QNetworkReply::NetworkError err)
     switch (err)
     {
     case QNetworkReply::ConnectionRefusedError:
-        {
-            emit authError(AUTH_CONNECTION_REFUSED);
-            break;
-        }
+    {
+        emit authError(AUTH_CONNECTION_REFUSED);
+        break;
+    }
     case QNetworkReply::RemoteHostClosedError:
-        {
-            emit authError(AUTH_REMOTE_HOST_CLOSED);
-            break;
-        }
+    {
+        emit authError(AUTH_REMOTE_HOST_CLOSED);
+        break;
+    }
     case QNetworkReply::HostNotFoundError:
-        {
-            emit authError(AUTH_HOST_NOT_FOUND);
-            break;
-        }
+    {
+        emit authError(AUTH_HOST_NOT_FOUND);
+        break;
+    }
     case QNetworkReply::TemporaryNetworkFailureError:
-        {
-            emit authError(AUTH_TEMP_NETWORK_FAILURE);
-            break;
-        }
+    {
+        emit authError(AUTH_TEMP_NETWORK_FAILURE);
+        break;
+    }
     case QNetworkReply::UnknownNetworkError:
-        {
-            emit authError(AUTH_NETWORK_ERROR);
-            break;
-        }
+    {
+        emit authError(AUTH_NETWORK_ERROR);
+        break;
+    }
     case QNetworkReply::ProtocolFailure:
-        {
-            emit authError(AUTH_PROTOCOL_FAILURE);
-            break;
-        }
+    {
+        emit authError(AUTH_PROTOCOL_FAILURE);
+        break;
+    }
     case QNetworkReply::OperationCanceledError:
-        {
-            //Erreur émise lors de l'appel à abort()
-            return;
-        }
+    {
+        //Erreur émise lors de l'appel à abort()
+        return;
+    }
     default:
-        {
-            emit authError(AUTH_UNDEFINED_ERROR);
-            break;
-        }
+    {
+        emit authError(AUTH_UNDEFINED_ERROR);
+        break;
+    }
     }
 
     if (m_reply)

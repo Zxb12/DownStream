@@ -8,9 +8,9 @@
 #include <QDebug>
 
 FenPrincipale::FenPrincipale(QWidget *parent) :
-        QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
-        m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
-        m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
+    QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
+    m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
+    m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
     setWindowTitle(APP_NAME " - v" VERSION);
@@ -32,7 +32,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_handler, SIGNAL(error(DownloadError)), this, SLOT(error(DownloadError)));
     connect(m_handler, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(updateDownload(qint64, qint64)));
     connect(m_handler, SIGNAL(finished()), this, SLOT(downloadComplete()));
-    connect(m_handler, SIGNAL(waitTime(int)), this, SLOT(waitTimerStart(int)));
+    connect(m_handler, SIGNAL(waitTime(int, QString)), this, SLOT(waitTimerStart(int, QString)));
 
     console("Authentification...");
     m_auth->login(m_login, m_password);
@@ -177,45 +177,45 @@ void FenPrincipale::authFail(AuthError err)
     switch (err)
     {
     case AUTH_INVALID_LOGIN:
-        {
-            console("Nom de compte ou mot de passe incorrect.");
-            break;
-        }
+    {
+        console("Nom de compte ou mot de passe incorrect.");
+        break;
+    }
     case AUTH_CONNECTION_REFUSED:
-        {
-            console("L'hôte distant a refusé la connexion.");
-            break;
-        }
+    {
+        console("L'hôte distant a refusé la connexion.");
+        break;
+    }
     case AUTH_REMOTE_HOST_CLOSED:
-        {
-            console("L'hôte distant a coupé la connexion prématurément");
-            break;
-        }
+    {
+        console("L'hôte distant a coupé la connexion prématurément");
+        break;
+    }
     case AUTH_HOST_NOT_FOUND:
-        {
-            console("Hôte non trouvé");
-            break;
-        }
+    {
+        console("Hôte non trouvé");
+        break;
+    }
     case AUTH_TEMP_NETWORK_FAILURE:
-        {
-            console("Défaillance temporaire du réseau");
-            break;
-        }
+    {
+        console("Défaillance temporaire du réseau");
+        break;
+    }
     case AUTH_NETWORK_ERROR:
-        {
-            console("Défaillance du réseau");
-            break;
-        }
+    {
+        console("Défaillance du réseau");
+        break;
+    }
     case AUTH_PROTOCOL_FAILURE:
-        {
-            console("Erreur de protocole");
-            break;
-        }
+    {
+        console("Erreur de protocole");
+        break;
+    }
     case AUTH_UNDEFINED_ERROR:
-        {
-            console("Erreur indéfinie");
-            break;
-        }
+    {
+        console("Erreur indéfinie");
+        break;
+    }
     }
 }
 
@@ -289,53 +289,53 @@ void FenPrincipale::error(DownloadError error)
     switch (error)
     {
     case LINK_NETWORK_ERROR:
-        {
-            console("Erreur: erreur de connexion pour récupérer le lien pour " + m_currentDownload);
-            break;
-        }
+    {
+        console("Erreur: erreur de connexion pour récupérer le lien pour " + m_currentDownload);
+        break;
+    }
     case LINK_NOT_FOUND:
-        {
-            console("Erreur: lien de téléchargement non trouvé (lien invalide ou supprimé) pour " + m_currentDownload);
-            startNextDownload();
-            break;
-        }
+    {
+        console("Erreur: lien de téléchargement non trouvé (lien invalide ou supprimé) pour " + m_currentDownload);
+        startNextDownload();
+        break;
+    }
     case FILE_COULD_NOT_BE_OPENED:
-        {
-            console("Erreur: le fichier de destination n'a pas pu être ouvert !");
-            break;
-        }
+    {
+        console("Erreur: le fichier de destination n'a pas pu être ouvert !");
+        break;
+    }
     case FILE_CORRUPT_RESTART_DOWNLOAD:
-        {
-            console("Erreur: le fichier de destination est corrompu, redémarrage du téléchargement !");
-            break;
-        }
+    {
+        console("Erreur: le fichier de destination est corrompu, redémarrage du téléchargement !");
+        break;
+    }
     case DOWNLOAD_LIMIT_REACHED:
-        {
-            console("Erreur: la limite de transferts a été atteinte !");
-            break;
-        }
+    {
+        console("Erreur: la limite de transferts a été atteinte !");
+        break;
+    }
     case DOWNLOAD_NETWORK_ERROR:
-        {
-            console("Erreur: téléchargement interrompu !");
-            break;
-        }
+    {
+        console("Erreur: téléchargement interrompu !");
+        break;
+    }
     case DOWNLOAD_EMPTY:
-        {
-            console("Erreur: téléchargement vide ! (erreur de connexion)");
-            break;
-        }
+    {
+        console("Erreur: téléchargement vide ! (erreur de connexion)");
+        break;
+    }
     default:
-        {
-            console("Erreur: " + QString::number(error));
-            break;
-        }
+    {
+        console("Erreur: " + QString::number(error));
+        break;
+    }
     }
 }
 
-void FenPrincipale::waitTimerStart(int time)    //time = secondes
+void FenPrincipale::waitTimerStart(int time, QString msg)    //time = secondes
 {
     m_updateDownloadTimer->stop();
-    ui->progression->setFormat("%v/%m secondes");
+    ui->progression->setFormat("%v/%m " + msg);
     ui->progression->setRange(0, time);
     ui->progression->setValue(0);
     m_waitTime = time;
