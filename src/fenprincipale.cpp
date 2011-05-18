@@ -10,6 +10,7 @@
 FenPrincipale::FenPrincipale(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
     m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
+    m_versionCheck(new VersionCheckThread(this, VERSION_HOST, APP_NAME, VERSION, VERSION_NBR)),
     m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
@@ -23,6 +24,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(ui->adresse, SIGNAL(returnPressed()), this, SLOT(on_btn_ajouter_clicked()));
     connect(m_waitTimer, SIGNAL(timeout()), this, SLOT(waitTimerTick()));
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
+    connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
     clipboardChange();  //Remplit tout de suite avec les données du clipboard
 
@@ -37,6 +39,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     console("Authentification...");
     m_auth->login(m_login, m_password);
     m_updateDownloadTimer->setInterval(DOWNLOAD_SPEED_UPDATE_INTERVAL);
+    m_versionCheck->start();
     m_waitTimer->setInterval(1000);
 
     ui->btn_arreter->hide();
@@ -128,6 +131,16 @@ void FenPrincipale::settingsChanged()
     m_auth->login(m_login, m_password);
 
     saveSettings();
+}
+
+void FenPrincipale::updateAvailable(QString version, QString url)
+{
+    QMessageBox msgBox(this);
+    msgBox.setText("Une nouvelle version de DownStream est disponible !");
+    msgBox.setDetailedText("Nouvelle version: " + version + "\r\n"
+                           "Lien de téléchargement: " + url);
+    msgBox.exec();
+
 }
 
 void FenPrincipale::saveSettings()

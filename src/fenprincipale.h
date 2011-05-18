@@ -5,6 +5,7 @@
 #include "downloadhandler.h"
 #include "auth.h"
 #include "vitessetransfert.h"
+#include "versioncheck.h"
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
@@ -33,6 +34,7 @@ private slots:
     void console(QString);
     void clipboardChange();
     void settingsChanged();
+    void updateAvailable(QString, QString);
 
     //Options
     void saveSettings();
@@ -72,6 +74,7 @@ private:
     Auth *m_auth;
     DownloadHandler *m_handler;
     VitesseTransfert *m_vitesseTransfert;
+    VersionCheckThread *m_versionCheck;
 
     QString m_currentDownload;
     QTimer *m_waitTimer, *m_updateDownloadTimer;

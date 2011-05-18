@@ -4,8 +4,9 @@
 #define APP_NAME            "DownStream"
 #define APP_ORGANIZATION    "Camille Maller"
 #define VERSION             "1.0"
+#define VERSION_NBR         1
 
-#define IN_MILLISECONDS 1000
+#define VERSION_HOST        "supversion.frugebul.tk"
 
 #define DOWNLOAD_BUFFER 64 * 1024  //Le buffer doit être plus grand que la page d'erreur renvoyée par Megaupload (limit exceeded...)
 #define DOWNLOAD_LIMIT_EXCEEDED     "<BODY>Download limit exceeded</BODY></HTML>"
@@ -17,6 +18,7 @@
 
 #define DOWNLOAD_SPEED_UPDATE_INTERVAL  1 * IN_MILLISECONDS
 #define DOWNLOAD_SPEED_AVERAGE_TIME     5 * IN_MILLISECONDS
+#define IN_MILLISECONDS 1000
 
 #define MEGAUPLOAD QUrl("http://www.megaupload.com")
 
