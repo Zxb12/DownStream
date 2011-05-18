@@ -1,4 +1,11 @@
 DownStream Changelog
 
+1.1
+- Fix: reprise des téléchargements après une erreur (arrêt/limite dépassée/...)
+- Fix: affichage de la vitesse après une reprise de téléchargement
+- Affichage de la version du programme dans la fenêtre principale
+- Traduction de quelques boutons
+- Création d'un système d'alertes de mises à jour
+
 1.0
 - Release initial

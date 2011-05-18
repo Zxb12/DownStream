@@ -3,8 +3,8 @@
 
 #define APP_NAME            "DownStream"
 #define APP_ORGANIZATION    "Camille Maller"
-#define VERSION             "1.0"
-#define VERSION_NBR         1
+#define VERSION             "1.1"
+#define VERSION_NBR         2
 
 #define VERSION_HOST        "supversion.frugebul.tk"
 
