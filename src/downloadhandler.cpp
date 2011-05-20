@@ -85,6 +85,7 @@ void DownloadHandler::downloadError(DownloadError err)
     switch (err)
     {
     case DOWNLOAD_NETWORK_ERROR:
+    case DOWNLOAD_SOCKET_TIMEOUT:
         wait(RETRY_TIMER, BEFORE_NEXT_TRY, SLOT(restartDownload()));
         break;
     case DOWNLOAD_EMPTY:

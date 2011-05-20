@@ -9,6 +9,7 @@
 #define VERSION_HOST        "supversion.frugebul.tk"
 
 #define DOWNLOAD_BUFFER 64 * 1024  //Le buffer doit être plus grand que la page d'erreur renvoyée par Megaupload (limit exceeded...)
+#define DOWNLOAD_NO_RECV_TIMER  15
 #define DOWNLOAD_LIMIT_EXCEEDED     "<BODY>Download limit exceeded</BODY></HTML>"
 #define RETRY_TIMER 10
 #define LIMIT_REACHED_TIMER 60
@@ -58,6 +59,7 @@ enum DownloadError
     DOWNLOAD_LIMIT_REACHED,
     DOWNLOAD_NETWORK_ERROR,
     DOWNLOAD_EMPTY,
+    DOWNLOAD_SOCKET_TIMEOUT,
 };
 
 #endif // ENUMS_H

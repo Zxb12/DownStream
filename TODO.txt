@@ -1,5 +1,4 @@
 Gérer les erreurs type lien effacé et lien temporairement indisponible
-Recommencer le téléchargement si aucune donnée n'a été reçue depuis trop longtemps
 Améliorer l'affichage des liens (nom, taille...)
 Sortie log
 Arrêter le thread de vérif de versions lors de l'arrêt

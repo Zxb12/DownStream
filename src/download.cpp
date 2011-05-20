@@ -4,8 +4,12 @@
 #include <QDebug>
 
 Download::Download(QObject *parent) :
-    QObject(parent), m_url(), m_startPos(0), m_pos(0), m_size(0), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL), m_dir(), m_file()
+    QObject(parent), m_url(), m_startPos(0), m_pos(0), m_size(0), m_timer(new QTimer(this)),m_accessManager(new QNetworkAccessManager(this)),
+    m_reply(NULL), m_dir(), m_file()
 {
+    m_timer->setSingleShot(true);
+    m_timer->setInterval(DOWNLOAD_NO_RECV_TIMER * IN_MILLISECONDS);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(socketTimeout()));
 }
 
 void Download::setCookieJar(QNetworkCookieJar *cookieJar)
@@ -96,6 +100,7 @@ void Download::stopDownload()
     {
         m_reply->abort();
         m_reply = NULL;
+        m_timer->stop();
     }
 }
 void Download::recvData(qint64 pos, qint64 size)
@@ -121,6 +126,8 @@ void Download::recvData(qint64 pos, qint64 size)
     if (m_reply->bytesAvailable() >= DOWNLOAD_BUFFER)
         writeBuffer();
 
+    m_timer->start();
+
     emit downloadProgress(m_pos, m_size);
 }
 
@@ -130,6 +137,7 @@ void Download::downloadFinished()
              << ", m_startPos = " << m_startPos << ", m_size = " << m_size << ", m_file.pos() = " << m_file.pos();
 
     m_startPos = m_file.pos();
+    m_timer->stop();
 
     //Traitement des erreurs
     switch (m_reply->error())
@@ -179,6 +187,12 @@ void Download::downloadFinished()
     m_file.close();
     m_reply->close();
     m_reply = NULL;
+}
+
+void Download::socketTimeout()
+{
+    m_reply->abort();
+    emit error(DOWNLOAD_SOCKET_TIMEOUT);
 }
 
 bool Download::containsError(const QByteArray &data)

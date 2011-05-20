@@ -40,7 +40,11 @@ void LinkExtractor::reply()
             m_reply = NULL;
             return;
         }
+        qDebug() << "LinkExtractor::reply() erreur: " << m_reply->errorString();
         emit error(LINK_NETWORK_ERROR);
+        m_reply->close();
+        m_reply = NULL;
+        return;
     }
     //Extraction des données de la réponse
     QByteArray data = m_reply->readAll();

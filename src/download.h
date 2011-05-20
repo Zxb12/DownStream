@@ -10,6 +10,7 @@
 #include <QNetworkCookieJar>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QTimer>
 
 class Download : public QObject
 {
@@ -30,6 +31,7 @@ private:
     void writeBuffer();
     QUrl m_url;
     qint64 m_startPos, m_pos, m_size;
+    QTimer *m_timer;
 
     //Réseau
     QNetworkAccessManager *m_accessManager;
@@ -42,6 +44,7 @@ private:
 private slots:
     void recvData(qint64, qint64);
     void downloadFinished();
+    void socketTimeout();
 
 signals:
     void error(DownloadError err);

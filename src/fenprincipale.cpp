@@ -337,6 +337,11 @@ void FenPrincipale::error(DownloadError error)
         console("Erreur: téléchargement vide ! (erreur de connexion)");
         break;
     }
+    case DOWNLOAD_SOCKET_TIMEOUT:
+    {
+        console("Erreur: timeout de la connexion !");
+        break;
+    }
     default:
     {
         console("Erreur: " + QString::number(error));
