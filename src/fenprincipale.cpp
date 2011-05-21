@@ -374,6 +374,8 @@ void FenPrincipale::closeEvent(QCloseEvent *event)
     saveSettings();
     m_handler->stopDownload();
     event->accept();
+    if (m_versionCheck->isRunning())
+        m_versionCheck->terminate();
 }
 
 bool FenPrincipale::isMegauploadUrl(const QString &url)
