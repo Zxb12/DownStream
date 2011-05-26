@@ -1,5 +1,9 @@
 DownStream Changelog
 
+1.2
+- Fix: téléchargements de fichiers avec des caractères spéciaux
+- Erreur de téléchargement si aucune donnée n'a été reçue en 15 secondes
+
 1.1
 - Fix: reprise des téléchargements après une erreur (arrêt/limite dépassée/...)
 - Fix: affichage de la vitesse après une reprise de téléchargement
