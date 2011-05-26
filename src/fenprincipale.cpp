@@ -26,7 +26,6 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
     connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
-    clipboardChange();  //Remplit tout de suite avec les données du clipboard
 
     //Téléchargement
     connect(m_auth, SIGNAL(authed(AuthInfo)), this, SLOT(authSuccess(AuthInfo)));
@@ -41,6 +40,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     m_updateDownloadTimer->setInterval(DOWNLOAD_SPEED_UPDATE_INTERVAL);
     m_versionCheck->start();
     m_waitTimer->setInterval(1000);
+    clipboardChange();  //Initialise la zone d'adresse avec les adresses déjà présentes en mémoire.
 
     ui->btn_arreter->hide();
 }
@@ -52,22 +52,19 @@ FenPrincipale::~FenPrincipale()
 
 void FenPrincipale::on_btn_ajouter_clicked()
 {
-    QString adresse = ui->adresse->text();
+    QStringList adresses = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
 
-    if (m_adresses.contains(adresse, Qt::CaseInsensitive))
-        return;
+    foreach (QString adresse, adresses)
+    {
+        if (m_adresses.contains(adresse, Qt::CaseInsensitive) || !isMegauploadUrl(adresse))
+            adresses.removeOne(adresse);
+        else
+            m_adresses.push_back(adresse);
+            ui->liste->addItem(adresse);
+    }
 
-    if (isMegauploadUrl(adresse))
-    {
-        m_adresses.push_back(adresse);
-        ui->liste->addItem(adresse);
-        ui->adresse->clear();
-        ui->adresse->setFocus();
-    }
-    else
-    {
-        QMessageBox::warning(this, APP_NAME, "Le lien que vous avez entré n'est pas un lien Megaupload valide !");
-    }
+    ui->adresse->clear();
+    ui->adresse->setFocus();
 }
 
 void FenPrincipale::on_btn_supprimer_clicked()
@@ -116,12 +113,20 @@ void FenPrincipale::console(QString out)
 
 void FenPrincipale::clipboardChange()
 {
-    QString url = QApplication::clipboard()->text().simplified();
-    if (isMegauploadUrl(url))
+    QStringList clipboard = QApplication::clipboard()->text().simplified().split(' ');
+    QStringList urls;
+
+    foreach (QString url, clipboard)
     {
-        ui->adresse->setText(url);
-        ui->adresse->setFocus();
-        ui->adresse->selectAll();
+        if (isMegauploadUrl(url))
+        {
+            urls << url;
+        }
+    }
+
+    if (!urls.isEmpty())
+    {
+        ui->adresse->setText(urls.join(" "));
     }
 }
 
