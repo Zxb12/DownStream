@@ -3,6 +3,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QRegExp>
+#include <QTextDocumentFragment>
 
 #include <QDebug>
 
@@ -60,8 +61,9 @@ void LinkExtractor::reply()
         return;
     }
 
-    //Envoi du lien
-    QUrl fileLink = regexp.cap();
+    //Interprétation des caractères spéciaux (HTML) dans le lien
+    QUrl fileLink = QTextDocumentFragment::fromHtml(regexp.cap()).toPlainText();
+
     emit linkAvailable(fileLink);
 
 }

@@ -1,4 +1,3 @@
 Gérer les erreurs type lien effacé et lien temporairement indisponible
 Améliorer l'affichage des liens (nom, taille...)
 Sortie log
-Arrêter le thread de vérif de versions lors de l'arrêt
