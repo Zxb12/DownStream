@@ -105,6 +105,9 @@ void Download::stopDownload()
 }
 void Download::recvData(qint64 pos, qint64 size)
 {
+    if (size == -1 || m_reply->error()) //Erreur
+        return;
+
     if (!size)  //size == 0 dans certains cas d'erreur invisibles par m_reply->error()
     {
         emit error(DOWNLOAD_EMPTY);
@@ -112,8 +115,6 @@ void Download::recvData(qint64 pos, qint64 size)
         return;
     }
 
-    if (size == -1 || m_reply->error()) //Erreur
-        return;
 
     if (!m_size)
     {
@@ -151,6 +152,21 @@ void Download::downloadFinished()
     {
         qDebug() << "Download limit exceeded";
         emit error(DOWNLOAD_LIMIT_REACHED);
+        break;
+    }
+    case QNetworkReply::UnknownContentError:    //Téléchargement déjà terminé
+    {
+        if (m_reply->errorString().contains("Requested Range Not Satisfiable", Qt::CaseInsensitive))
+        {
+            qDebug() << "Téléchargement déjà terminé";
+            m_startPos = 0, m_pos = 0, m_size = 0;
+            emit finished();
+        }
+        else
+        {
+            qDebug() << "Unknown download error";
+            emit error(DOWNLOAD_NETWORK_ERROR);
+        }
         break;
     }
     case QNetworkReply::NoError:
