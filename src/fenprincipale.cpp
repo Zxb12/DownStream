@@ -52,15 +52,15 @@ FenPrincipale::~FenPrincipale()
 
 void FenPrincipale::on_btn_ajouter_clicked()
 {
-    QStringList adresses = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
+    QStringList urls = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
 
-    foreach (QString adresse, adresses)
+    foreach (QString url, urls)
     {
-        if (m_adresses.contains(adresse, Qt::CaseInsensitive) || !isMegauploadUrl(adresse))
-            adresses.removeOne(adresse);
+        if (m_adresses.contains(url, Qt::CaseInsensitive) || !isMegauploadUrl(url))
+            urls.removeOne(url);
         else
-            m_adresses.push_back(adresse);
-            ui->liste->addItem(adresse);
+            m_adresses.push_back(url);
+            ui->liste->addItem(url);
     }
 
     ui->adresse->clear();
@@ -118,7 +118,7 @@ void FenPrincipale::clipboardChange()
 
     foreach (QString url, clipboard)
     {
-        if (isMegauploadUrl(url))
+        if (isMegauploadUrl(url) && !m_adresses.contains(url, Qt::CaseInsensitive))
         {
             urls << url;
         }
