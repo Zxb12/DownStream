@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QString>
 
+#define LOG_NAME "log.log"
+
 #define sLog Log::instance()
 #define pNbr QString::number
 

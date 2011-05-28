@@ -7,7 +7,7 @@ Log *Log::_p = NULL;
 
 Log::Log()
 {
-    m_file.setFileName("out.txt");
+    m_file.setFileName(LOG_NAME);
     m_file.open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Unbuffered);
 
     out("--- Log start ---");
@@ -33,7 +33,10 @@ Log* Log::instance()
 void Log::free()
 {
     if (_p)
+    {
         delete _p;
+        _p = NULL;
+    }
 }
 
 void Log::out(const QString &str)
