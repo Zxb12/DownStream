@@ -4,8 +4,6 @@
 
 #include <QFileDialog>
 
-#include <QDebug>
-
 FenOptions::FenOptions(QWidget *parent, QDir *dir, QByteArray *login, QByteArray *password) :
     QDialog(parent), ui(new Ui::FenOptions), m_dir(dir), m_login(login), m_password(password)
 {

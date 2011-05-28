@@ -23,6 +23,8 @@
 
 #define MEGAUPLOAD QUrl("http://www.megaupload.com")
 
+#include "log.h"
+
 enum AuthLevel
 {
     GUEST = 45, //secondes d'attente

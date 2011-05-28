@@ -19,7 +19,8 @@ SOURCES += src/main.cpp\
     src/fenoptions.cpp \
     src/vitessetransfert.cpp \
     src/versioncheck.cpp \
-    src/paquet.cpp
+    src/paquet.cpp \
+    src/log.cpp
 
 HEADERS  += src/fenprincipale.h \
     src/downloadhandler.h \
@@ -30,7 +31,8 @@ HEADERS  += src/fenprincipale.h \
     src/fenoptions.h \
     src/vitessetransfert.h \
     src/versioncheck.h \
-    src/paquet.h
+    src/paquet.h \
+    src/log.h
 
 FORMS    += src/fenprincipale.ui \
     src/fenoptions.ui

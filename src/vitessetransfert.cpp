@@ -31,7 +31,7 @@ void VitesseTransfert::updateVitesse()
         octetsParSeconde /= 1024;
     }
 
-    m_vitesseTransfert = QString::number(octetsParSeconde, 'f', PRECISION);
+    m_vitesseTransfert = pNbr(octetsParSeconde, 'f', PRECISION);
 
     switch (exp)
     {

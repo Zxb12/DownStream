@@ -1,7 +1,5 @@
 #include "downloadhandler.h"
 
-#include <QDebug>
-
 DownloadHandler::DownloadHandler(QObject *parent) :
     QObject(parent), m_authInfo(), m_url(), m_downloadUrl(), m_timer(new QTimer(this)),
     m_linkExtractor(new LinkExtractor(this)), m_download(new Download(this)), m_dir()
@@ -47,7 +45,7 @@ void DownloadHandler::stopDownload()
 
 void DownloadHandler::linkAvailable(QUrl url)
 {
-    qDebug() << "Lien de téléchargement trouvé !" << url;
+    sLog->out("Lien de téléchargement trouvé : %1", url.toString());
 
     m_downloadUrl = url;
     wait(m_authInfo.level, BEFORE_LINK_AVAILABLE, SLOT(startDownload()));

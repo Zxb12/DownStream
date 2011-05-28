@@ -3,8 +3,6 @@
 #include <QStringList>
 #include <QNetworkRequest>
 
-#include <QDebug>
-
 Auth::Auth(QObject *parent) :
     QObject(parent), m_authLevel(GUEST), m_cookieJar(new QNetworkCookieJar(this)), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
 {

@@ -6,7 +6,6 @@
 #include <QObject>
 #include <QThread>
 #include <QTcpSocket>
-#include <QDebug>
 
 class VersionCheckThread : public QThread
 {

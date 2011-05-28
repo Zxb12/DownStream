@@ -5,7 +5,6 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QCloseEvent>
-#include <QDebug>
 
 FenPrincipale::FenPrincipale(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
@@ -43,11 +42,14 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     clipboardChange();  //Initialise la zone d'adresse avec les adresses déjà présentes en mémoire.
 
     ui->btn_arreter->hide();
+
+    sLog->out(APP_NAME " startup.");
 }
 
 FenPrincipale::~FenPrincipale()
 {
     delete ui;
+    sLog->free();
 }
 
 void FenPrincipale::on_btn_ajouter_clicked()
@@ -104,7 +106,6 @@ void FenPrincipale::on_options_clicked()
 
 void FenPrincipale::console(QString out)
 {
-    qDebug() << out;
     ui->statusBar->showMessage(out);
 
     if (!qApp->focusWidget())
@@ -349,7 +350,7 @@ void FenPrincipale::error(DownloadError error)
     }
     default:
     {
-        console("Erreur: " + QString::number(error));
+        console("Erreur: " + pNbr(error));
         break;
     }
     }
@@ -401,7 +402,7 @@ QString FenPrincipale::sizeToString(quint64 nbr)
         nbr /= 1024;
     }
 
-    QString ret = QString::number(nbr);
+    QString ret = pNbr(nbr);
 
     switch (exp)
     {
