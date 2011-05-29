@@ -8,9 +8,9 @@
 
 FenPrincipale::FenPrincipale(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
-    m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
-    m_versionCheck(new VersionCheckThread(this, VERSION_HOST, APP_NAME, VERSION, VERSION_NBR)),
-    m_currentDownload(), m_waitTimer(new QTimer(this)), m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
+    m_infoExtractor(new InfoExtractor(this)), m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
+    m_versionCheck(new VersionCheckThread(this, VERSION_HOST, APP_NAME, VERSION, VERSION_NBR)), m_currentDownload(), m_waitTimer(new QTimer(this)),
+    m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
     setWindowTitle(APP_NAME " - v" VERSION);
@@ -22,6 +22,8 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     //UI
     connect(ui->adresse, SIGNAL(returnPressed()), this, SLOT(on_btn_ajouter_clicked()));
     connect(m_waitTimer, SIGNAL(timeout()), this, SLOT(waitTimerTick()));
+    connect(m_infoExtractor, SIGNAL(infoAvailable(QString,QString,QString,QString)), this, SLOT(infoAvailable(QString,QString,QString,QString)));
+    connect(m_infoExtractor, SIGNAL(infoUnavailable(QString,bool)), this, SLOT(infoUnavailable(QString,bool)));
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
     connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
@@ -49,20 +51,32 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
 FenPrincipale::~FenPrincipale()
 {
     delete ui;
+    delete m_auth;
+    delete m_handler;
+    delete m_infoExtractor;
+    delete m_vitesseTransfert;
+    delete m_versionCheck;
+    delete m_updateDownloadTimer;
+    delete m_waitTimer;
+
     sLog->free();
 }
 
 void FenPrincipale::on_btn_ajouter_clicked()
 {
-    QStringList urls = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
-
-    foreach (QString url, urls)
+    QStringList newUrls = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
+    QStringList urls;
+    foreach(UrlItem info, m_adresses)
     {
-        if (m_adresses.contains(url, Qt::CaseInsensitive) || !isMegauploadUrl(url))
-            urls.removeOne(url);
+        urls << info.url;
+    }
+
+    foreach (QString url, newUrls)
+    {
+        if (urls.contains(url, Qt::CaseInsensitive) || !isMegauploadUrl(url))
+            newUrls.removeOne(url);
         else
-            m_adresses.push_back(url);
-            ui->liste->addItem(url);
+            addItem(url);
     }
 
     ui->adresse->clear();
@@ -73,10 +87,7 @@ void FenPrincipale::on_btn_supprimer_clicked()
 {
     int row = ui->liste->currentRow();
     if (row >= 0)
-    {
-        QString link = ui->liste->takeItem(row)->text();
-        m_adresses.removeOne(link);
-    }
+        removeItem(row);
 }
 
 void FenPrincipale::on_btn_go_clicked()
@@ -115,19 +126,23 @@ void FenPrincipale::console(QString out)
 void FenPrincipale::clipboardChange()
 {
     QStringList clipboard = QApplication::clipboard()->text().simplified().split(' ');
-    QStringList urls;
+    QStringList urls, newUrls;
+    foreach(UrlItem info, m_adresses)
+    {
+        urls << info.url;
+    }
 
     foreach (QString url, clipboard)
     {
-        if (isMegauploadUrl(url) && !m_adresses.contains(url, Qt::CaseInsensitive))
+        if (isMegauploadUrl(url) && !urls.contains(url, Qt::CaseInsensitive))
         {
-            urls << url;
+            newUrls << url;
         }
     }
 
-    if (!urls.isEmpty())
+    if (!newUrls.isEmpty())
     {
-        ui->adresse->setText(urls.join(" "));
+        ui->adresse->setText(newUrls.join(" "));
     }
 }
 
@@ -149,14 +164,26 @@ void FenPrincipale::updateAvailable(QString version, QString url)
 
 }
 
+void FenPrincipale::infoAvailable(QString url, QString name, QString description, QString size)
+{
+    renameItem(url, name + " (" + size + ")", "Description: " + description + "\nLien: " + url);
+}
+
+void FenPrincipale::infoUnavailable(QString url, bool temporary)
+{
+    if (temporary)
+        renameItem(url, "Fichier temporairement indisponible (" + url + ")");
+    else
+        renameItem(url, "Fichier supprimé (" + url + ")");
+}
+
 void FenPrincipale::saveSettings()
 {
     QStringList links;
     if (!m_currentDownload.isEmpty())
-        links << m_currentDownload << m_adresses;
-    else
-        links << m_adresses;
-
+        links << m_currentDownload;
+    foreach(UrlItem item, m_adresses)
+        links << item.url;
 
     QSettings settings(APP_NAME, APP_ORGANIZATION);
     settings.setValue("links", links);
@@ -169,8 +196,9 @@ void FenPrincipale::saveSettings()
 void FenPrincipale::loadSettings()
 {
     QSettings settings(APP_NAME, APP_ORGANIZATION);
-    m_adresses = settings.value("links").toStringList();
-    ui->liste->addItems(m_adresses);
+    QStringList links = settings.value("links").toStringList();
+    foreach(QString link, links)
+        addItem(link);
     m_login = settings.value("login").toByteArray();
     m_password = settings.value("password").toByteArray();
     m_dir = settings.value("destDir", QDir::home().absolutePath()).toString();
@@ -245,8 +273,8 @@ void FenPrincipale::startNextDownload()
         //Téléchargement suivant seulement si aucun téléchargement n'est en cours.
         if (m_currentDownload.isEmpty())
         {
-            m_currentDownload = m_adresses.takeFirst();
-            ui->liste->takeItem(0);
+            m_currentDownload = m_adresses.takeFirst().url;
+            removeItem(0);
         }
 
         ui->btn_go->hide();
@@ -373,6 +401,45 @@ void FenPrincipale::waitTimerTick()
         ui->progression->setValue(time + 1);
     else
         m_waitTimer->stop();
+}
+
+void FenPrincipale::addItem(const QString &url)
+{
+    QListWidgetItem *item = new QListWidgetItem(url);
+
+    UrlItem urlItem;
+    urlItem.url = url;
+    urlItem.item = item;
+
+    m_adresses.push_back(urlItem);
+    ui->liste->addItem(item);
+    m_infoExtractor->queue(url);
+}
+
+void FenPrincipale::removeItem(const int &row)
+{
+    Q_ASSERT(row >= 0);
+    QListWidgetItem *item = m_adresses[row].item;
+    ui->liste->removeItemWidget(item);
+    m_adresses.removeAt(row);
+    delete item;
+}
+
+void FenPrincipale::renameItem(const QString &url, const QString &label, const QString &tip)
+{
+    QListWidgetItem *item = NULL;
+    foreach(UrlItem itr, m_adresses)
+    {
+        if (itr.url == url)
+        {
+            item = itr.item;
+            break;
+        }
+    }
+
+    Q_ASSERT(item);
+    item->setText(label);
+    item->setToolTip(tip);
 }
 
 void FenPrincipale::closeEvent(QCloseEvent *event)

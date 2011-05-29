@@ -2,8 +2,9 @@
 #define FENPRINCIPALE_H
 
 #include "fenoptions.h"
-#include "downloadhandler.h"
 #include "auth.h"
+#include "downloadhandler.h"
+#include "infoextractor.h"
 #include "vitessetransfert.h"
 #include "versioncheck.h"
 
@@ -15,6 +16,12 @@ namespace Ui
 {
 class FenPrincipale;
 }
+
+struct UrlItem
+{
+    QString url;
+    QListWidgetItem *item;
+};
 
 class FenPrincipale : public QMainWindow
 {
@@ -35,6 +42,8 @@ private slots:
     void clipboardChange();
     void settingsChanged();
     void updateAvailable(QString, QString);
+    void infoAvailable(QString, QString, QString, QString);
+    void infoUnavailable(QString, bool);
 
     //Options
     void saveSettings();
@@ -56,6 +65,10 @@ private slots:
     void waitTimerTick();
 private:
     //Fonctions privées
+    void addItem(const QString &url);
+    void removeItem(const int &row);
+    void renameItem(const QString &url, const QString &label, const QString &tip = QString());
+
     void closeEvent(QCloseEvent *event);
     bool isMegauploadUrl(const QString &url);
     static QString sizeToString(quint64 size);
@@ -67,12 +80,13 @@ private:
     QSystemTrayIcon *m_tray;
 
     //Données persistantes
-    QStringList m_adresses;
+    QList<UrlItem> m_adresses;
     QByteArray m_login, m_password;
     QDir m_dir;
 
     Auth *m_auth;
     DownloadHandler *m_handler;
+    InfoExtractor *m_infoExtractor;
     VitesseTransfert *m_vitesseTransfert;
     VersionCheckThread *m_versionCheck;
 
