@@ -11,12 +11,14 @@
 #define DOWNLOAD_BUFFER 64 * 1024  //Le buffer doit être plus grand que la page d'erreur renvoyée par Megaupload (limit exceeded...)
 #define DOWNLOAD_NO_RECV_TIMER  15
 #define DOWNLOAD_LIMIT_EXCEEDED     "<BODY>Download limit exceeded</BODY></HTML>"
+#define FILE_TEMPORARILY_UNAVAILABLE  "The file you are trying to access is temporarily unavailable. Please try again later."
 #define RETRY_TIMER 10
 #define LIMIT_REACHED_TIMER 60
 
 #define BEFORE_LINK_AVAILABLE   "secondes d'attente"
 #define BEFORE_NEXT_TRY         "secondes avant le prochain essai"
 
+#define INFO_EXTRACTION_TIMEOUT         15 * IN_MILLISECONDS
 #define DOWNLOAD_SPEED_UPDATE_INTERVAL  1 * IN_MILLISECONDS
 #define DOWNLOAD_SPEED_AVERAGE_TIME     5 * IN_MILLISECONDS
 #define IN_MILLISECONDS 1000
