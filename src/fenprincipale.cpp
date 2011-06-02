@@ -67,7 +67,7 @@ void FenPrincipale::on_btn_ajouter_clicked()
 {
     QStringList newUrls = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
     QStringList urls;
-    foreach(UrlItem info, m_adresses)
+    foreach(DownloadItem info, m_adresses)
     {
         urls << info.url;
     }
@@ -125,7 +125,7 @@ void FenPrincipale::on_liste_currentRowChanged(int row)
 {
     if (row >= 0)
     {
-        UrlItem item = m_adresses[row];
+        DownloadItem item = m_adresses[row];
         ui->nomFichier->setText(item.name);
         ui->description->setText(item.description);
         ui->taille->setText(item.size);
@@ -152,7 +152,7 @@ void FenPrincipale::clipboardChange()
 {
     QStringList clipboard = QApplication::clipboard()->text().simplified().split(' ');
     QStringList urls, newUrls;
-    foreach(UrlItem info, m_adresses)
+    foreach(DownloadItem info, m_adresses)
     {
         urls << info.url;
     }
@@ -193,12 +193,12 @@ void FenPrincipale::infoAvailable(QString url, QString name, QString description
 {
     for (int i = 0; i < m_adresses.size(); i++)
     {
-        UrlItem &urlItem = m_adresses[i];
-        if (urlItem.url == url)
+        DownloadItem &downloadItem = m_adresses[i];
+        if (downloadItem.url == url)
         {
-            urlItem.name = name;
-            urlItem.description = description;
-            urlItem.size = size;
+            downloadItem.name = name;
+            downloadItem.description = description;
+            downloadItem.size = size;
             renameItem(url, name, "Description: " + description + "\nLien: " + url);
 
             if (ui->lienMegaupload->text() == url)  //Actualisation des infos si les détails de l'item sont affichés
@@ -224,9 +224,9 @@ void FenPrincipale::infoUnavailable(QString url, bool temporary)
 void FenPrincipale::saveSettings()
 {
     QStringList links;
-    if (!m_currentDownload.isEmpty())
-        links << m_currentDownload;
-    foreach(UrlItem item, m_adresses)
+    if (!m_currentDownload.url.isEmpty())
+        links << m_currentDownload.url;
+    foreach(DownloadItem item, m_adresses)
     {
         links << item.url;
     }
@@ -318,12 +318,12 @@ void FenPrincipale::authFail(AuthError err)
 
 void FenPrincipale::startNextDownload()
 {
-    if (!m_adresses.isEmpty() || !m_currentDownload.isEmpty())
+    if (!m_adresses.isEmpty() || !m_currentDownload.url.isEmpty())
     {
         //Téléchargement suivant seulement si aucun téléchargement n'est en cours.
-        if (m_currentDownload.isEmpty())
+        if (m_currentDownload.url.isEmpty())
         {
-            m_currentDownload = m_adresses.first().url;
+            m_currentDownload = m_adresses.first();
             removeItem(0);
             on_liste_currentRowChanged(ui->liste->currentRow());    //Corrige l'affichage d'informations de fichier incorrectes
         }
@@ -332,9 +332,9 @@ void FenPrincipale::startNextDownload()
         ui->btn_arreter->show();
 
         m_handler->setDir(m_dir);
-        m_handler->download(QUrl(m_currentDownload));
+        m_handler->download(m_currentDownload.url);
         m_vitesseTransfert->start();
-        console("Téléchargement de: " + m_currentDownload);
+        console("Téléchargement de: " + m_currentDownload.printableName());
     }
     else
     {
@@ -388,12 +388,12 @@ void FenPrincipale::error(DownloadError error)
     {
     case LINK_NETWORK_ERROR:
     {
-        console("Erreur: erreur de connexion pour récupérer le lien pour " + m_currentDownload);
+        console("Erreur: erreur de connexion pour récupérer le lien pour " + m_currentDownload.printableName());
         break;
     }
     case LINK_NOT_FOUND:
     {
-        console("Erreur: lien de téléchargement non trouvé (lien invalide ou supprimé) pour " + m_currentDownload);
+        console("Erreur: lien de téléchargement non trouvé (lien invalide ou supprimé) pour " + m_currentDownload.printableName());
         startNextDownload();
         break;
     }
@@ -458,14 +458,14 @@ void FenPrincipale::addItem(const QString &url)
 {
     QListWidgetItem *item = new QListWidgetItem(url);
 
-    UrlItem urlItem;
-    urlItem.url = url;
-    urlItem.name = QString();
-    urlItem.description = QString();
-    urlItem.size = QString();
-    urlItem.item = item;
+    DownloadItem downloadItem;
+    downloadItem.url = url;
+    downloadItem.name = QString();
+    downloadItem.description = QString();
+    downloadItem.size = QString();
+    downloadItem.item = item;
 
-    m_adresses.push_back(urlItem);
+    m_adresses.push_back(downloadItem);
     ui->liste->addItem(item);
     m_infoExtractor->queue(url);
 }
@@ -482,7 +482,7 @@ void FenPrincipale::removeItem(const int &row)
 void FenPrincipale::renameItem(const QString &url, const QString &label, const QString &tip)
 {
     QListWidgetItem *item = NULL;
-    foreach(UrlItem itr, m_adresses)
+    foreach(DownloadItem itr, m_adresses)
     {
         if (itr.url == url)
         {

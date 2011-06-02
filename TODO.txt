@@ -1,3 +1,2 @@
 Gérer les erreurs type lien effacé et lien temporairement indisponible
-Améliorer l'affichage des liens (nom, taille...)
 Shutdown when finished
