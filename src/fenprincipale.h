@@ -17,9 +17,22 @@ namespace Ui
 class FenPrincipale;
 }
 
-struct UrlItem
+struct DownloadInfo
 {
     QString url, name, description, size;
+
+    QString printableName() { return name.isEmpty() ? url : name; }
+    void clear()
+    {
+        url.clear();
+        name.clear();
+        description.clear();
+        size.clear();
+    }
+};
+
+struct DownloadItem : DownloadInfo
+{
     QListWidgetItem *item;
 };
 
@@ -84,7 +97,7 @@ private:
     QSystemTrayIcon *m_tray;
 
     //Données persistantes
-    QList<UrlItem> m_adresses;
+    QList<DownloadItem> m_adresses;
     QByteArray m_login, m_password;
     QDir m_dir;
 
@@ -94,7 +107,7 @@ private:
     VitesseTransfert *m_vitesseTransfert;
     VersionCheckThread *m_versionCheck;
 
-    QString m_currentDownload;
+    DownloadInfo m_currentDownload;
     QTimer *m_waitTimer, *m_updateDownloadTimer;
     int m_waitTime, m_pos, m_total;
     bool m_isDownloading;
