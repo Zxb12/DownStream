@@ -92,6 +92,7 @@ void DownloadHandler::downloadError(DownloadError err)
     case DOWNLOAD_LIMIT_REACHED:
         wait(LIMIT_REACHED_TIMER, BEFORE_NEXT_TRY, SLOT(restartLinkExtraction()));
         break;
+    case LINK_NOT_FOUND:
     case LINK_NETWORK_ERROR:
         wait(RETRY_TIMER, BEFORE_NEXT_TRY, SLOT(restartLinkExtraction()));
 

@@ -52,8 +52,7 @@ void LinkExtractor::reply()
 
     //Extraction du lien
     QRegExp regexp("http://www[0-9]*.megaupload.com/files/[^\"]*");
-    int pos = regexp.indexIn(data);
-    if (pos == -1)
+    if (regexp.indexIn(data) == -1)
     {
         emit error(LINK_NOT_FOUND);
         return;
