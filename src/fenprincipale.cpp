@@ -91,6 +91,46 @@ void FenPrincipale::on_btn_supprimer_clicked()
         removeItem(row);
 }
 
+void FenPrincipale::on_btn_monter_clicked()
+{
+    QList<QListWidgetItem *> selection = ui->liste->selectedItems();
+    QList<int> rows;
+    for (int i = 0; i < m_adresses.size(); i++)
+    {
+        if (selection.contains(m_adresses[i].item))
+            rows << i;
+    }
+
+    if (!rows.isEmpty() && rows.first() > 0)
+    {
+        foreach(int row, rows)
+        {
+            moveItem(row, row - 1);
+            ui->liste->setCurrentRow(row - 1, QItemSelectionModel::Select);
+        }
+    }
+}
+
+void FenPrincipale::on_btn_descendre_clicked()
+{
+    QList<QListWidgetItem *> selection = ui->liste->selectedItems();
+    QList<int> rows;
+    for (int i = m_adresses.size() - 1; i >= 0; i--)
+    {
+        if (selection.contains(m_adresses[i].item))
+            rows << i;
+    }
+
+    if (!rows.isEmpty() && rows.first() < m_adresses.size() - 1)
+    {
+        foreach(int row, rows)
+        {
+            moveItem(row, row + 1);
+            ui->liste->setCurrentRow(row + 1, QItemSelectionModel::Select);
+        }
+    }
+}
+
 void FenPrincipale::on_btn_go_clicked()
 {
     if (!m_adresses.isEmpty())
@@ -494,6 +534,15 @@ void FenPrincipale::renameItem(const QString &url, const QString &label, const Q
     Q_ASSERT(item);
     item->setText(label);
     item->setToolTip(tip);
+}
+
+void FenPrincipale::moveItem(int i, int j)
+{
+    DownloadItem downloadItem = m_adresses.takeAt(i);
+    ui->liste->takeItem(i);
+
+    m_adresses.insert(j, downloadItem);
+    ui->liste->insertItem(j, downloadItem.item);
 }
 
 void FenPrincipale::closeEvent(QCloseEvent *event)

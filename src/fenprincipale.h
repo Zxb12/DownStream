@@ -48,6 +48,8 @@ private slots:
     //UI
     void on_btn_ajouter_clicked();
     void on_btn_supprimer_clicked();
+    void on_btn_monter_clicked();
+    void on_btn_descendre_clicked();
     void on_btn_go_clicked();
     void on_btn_arreter_clicked();
     void on_btn_details_toggled(bool);
@@ -84,6 +86,7 @@ private:
     void addItem(const QString &url);
     void removeItem(const int &row);
     void renameItem(const QString &url, const QString &label, const QString &tip = QString());
+    void moveItem(int i, int j);
 
     void closeEvent(QCloseEvent *event);
     bool isMegauploadUrl(const QString &url);
