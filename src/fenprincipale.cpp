@@ -42,8 +42,9 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     m_versionCheck->start();
     m_waitTimer->setInterval(1000);
     clipboardChange();  //Initialise la zone d'adresse avec les adresses déjà présentes en mémoire.
-
+    setDetailsVisible(ui->btn_details->isChecked());
     ui->btn_arreter->hide();
+    ui->liste->setCurrentRow(0);
 
     sLog->out(APP_NAME " startup.");
 }
@@ -108,11 +109,35 @@ void FenPrincipale::on_btn_arreter_clicked()
     ui->btn_arreter->hide();
 }
 
+void FenPrincipale::on_btn_details_toggled(bool visible)
+{
+    setDetailsVisible(visible);
+}
+
 void FenPrincipale::on_options_clicked()
 {
     m_fenOptions = new FenOptions(this, &m_dir, &m_login, &m_password);
     connect(m_fenOptions, SIGNAL(accepted()), this, SLOT(settingsChanged()));
     m_fenOptions->show();
+}
+
+void FenPrincipale::on_liste_currentRowChanged(int row)
+{
+    if (row >= 0)
+    {
+        UrlItem item = m_adresses[row];
+        ui->nomFichier->setText(item.name);
+        ui->description->setText(item.description);
+        ui->taille->setText(item.size);
+        ui->lienMegaupload->setText(item.url);
+    }
+    else
+    {
+        ui->nomFichier->setText("");
+        ui->description->setText("");
+        ui->taille->setText("");
+        ui->lienMegaupload->setText("");
+    }
 }
 
 void FenPrincipale::console(QString out)
@@ -166,7 +191,26 @@ void FenPrincipale::updateAvailable(QString version, QString url)
 
 void FenPrincipale::infoAvailable(QString url, QString name, QString description, QString size)
 {
-    renameItem(url, name + " (" + size + ")", "Description: " + description + "\nLien: " + url);
+    for (int i = 0; i < m_adresses.size(); i++)
+    {
+        UrlItem &urlItem = m_adresses[i];
+        if (urlItem.url == url)
+        {
+            urlItem.name = name;
+            urlItem.description = description;
+            urlItem.size = size;
+            renameItem(url, name, "Description: " + description + "\nLien: " + url);
+
+            if (ui->lienMegaupload->text() == url)  //Actualisation des infos si les détails de l'item sont affichés
+            {
+                ui->nomFichier->setText(name);
+                ui->description->setText(description);
+                ui->taille->setText(size);
+            }
+
+            return;
+        }
+    }
 }
 
 void FenPrincipale::infoUnavailable(QString url, bool temporary)
@@ -183,13 +227,16 @@ void FenPrincipale::saveSettings()
     if (!m_currentDownload.isEmpty())
         links << m_currentDownload;
     foreach(UrlItem item, m_adresses)
+    {
         links << item.url;
+    }
 
     QSettings settings(APP_NAME, APP_ORGANIZATION);
     settings.setValue("links", links);
     settings.setValue("login", m_login);
     settings.setValue("password", m_password);
     settings.setValue("destDir", m_dir.path());
+    settings.setValue("details", ui->btn_details->isChecked());
     settings.setValue("firstRun", false);
 }
 
@@ -198,10 +245,13 @@ void FenPrincipale::loadSettings()
     QSettings settings(APP_NAME, APP_ORGANIZATION);
     QStringList links = settings.value("links").toStringList();
     foreach(QString link, links)
+    {
         addItem(link);
+    }
     m_login = settings.value("login").toByteArray();
     m_password = settings.value("password").toByteArray();
     m_dir = settings.value("destDir", QDir::home().absolutePath()).toString();
+    ui->btn_details->setChecked(settings.value("details", false).toBool());
     if (settings.value("firstRun", true).toBool())
     {
         QMessageBox::information(this, APP_NAME, "Ceci est le premier lancement de l'application. Veuillez entrer vos paramètres !");
@@ -273,8 +323,9 @@ void FenPrincipale::startNextDownload()
         //Téléchargement suivant seulement si aucun téléchargement n'est en cours.
         if (m_currentDownload.isEmpty())
         {
-            m_currentDownload = m_adresses.takeFirst().url;
+            m_currentDownload = m_adresses.first().url;
             removeItem(0);
+            on_liste_currentRowChanged(ui->liste->currentRow());    //Corrige l'affichage d'informations de fichier incorrectes
         }
 
         ui->btn_go->hide();
@@ -409,6 +460,9 @@ void FenPrincipale::addItem(const QString &url)
 
     UrlItem urlItem;
     urlItem.url = url;
+    urlItem.name = QString();
+    urlItem.description = QString();
+    urlItem.size = QString();
     urlItem.item = item;
 
     m_adresses.push_back(urlItem);
@@ -457,6 +511,32 @@ bool FenPrincipale::isMegauploadUrl(const QString &url)
     regexp.setCaseSensitivity(Qt::CaseInsensitive);
 
     return regexp.exactMatch(url);
+}
+
+void FenPrincipale::setDetailsVisible(bool visible)
+{
+    if (visible)
+    {
+        ui->labelNomDeFichier->show();
+        ui->labelDescription->show();
+        ui->labelTaille->show();
+        ui->labelLienMegaupload->show();
+        ui->nomFichier->show();
+        ui->description->show();
+        ui->taille->show();
+        ui->lienMegaupload->show();
+    }
+    else
+    {
+        ui->labelNomDeFichier->hide();
+        ui->labelDescription->hide();
+        ui->labelTaille->hide();
+        ui->labelLienMegaupload->hide();
+        ui->nomFichier->hide();
+        ui->description->hide();
+        ui->taille->hide();
+        ui->lienMegaupload->hide();
+    }
 }
 
 //Convertit une taille de fichier en une chaîne avec l'extention o, ko, Mo, Go, ...

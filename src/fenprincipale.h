@@ -19,7 +19,7 @@ class FenPrincipale;
 
 struct UrlItem
 {
-    QString url;
+    QString url, name, description, size;
     QListWidgetItem *item;
 };
 
@@ -37,7 +37,9 @@ private slots:
     void on_btn_supprimer_clicked();
     void on_btn_go_clicked();
     void on_btn_arreter_clicked();
+    void on_btn_details_toggled(bool);
     void on_options_clicked();
+    void on_liste_currentRowChanged(int);
     void console(QString);
     void clipboardChange();
     void settingsChanged();
@@ -63,6 +65,7 @@ private slots:
     //WaitTimer
     void waitTimerStart(int, QString);
     void waitTimerTick();
+
 private:
     //Fonctions privées
     void addItem(const QString &url);
@@ -71,6 +74,7 @@ private:
 
     void closeEvent(QCloseEvent *event);
     bool isMegauploadUrl(const QString &url);
+    void setDetailsVisible(bool visible);
     static QString sizeToString(quint64 size);
 
 

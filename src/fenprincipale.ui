@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>228</height>
+    <width>469</width>
+    <height>278</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>DownStream</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="ressource.qrc">
+   <iconset resource="../res/ressource.qrc">
     <normaloff>:/icon</normaloff>:/icon</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -82,6 +82,69 @@
      </layout>
     </item>
     <item>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelNomDeFichier">
+        <property name="text">
+         <string>Nom du fichier :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="nomFichier">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelDescription">
+        <property name="text">
+         <string>Description :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="description">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelTaille">
+        <property name="text">
+         <string>Taille :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="taille">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelLienMegaupload">
+        <property name="text">
+         <string>Lien Megaupload :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="lienMegaupload">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <spacer name="horizontalSpacer">
@@ -115,6 +178,16 @@
          <string>Télécharger</string>
         </property>
         <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_details">
+        <property name="text">
+         <string>Détails</string>
+        </property>
+        <property name="checkable">
          <bool>true</bool>
         </property>
        </widget>
@@ -156,7 +229,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="ressource.qrc"/>
+  <include location="../res/ressource.qrc"/>
  </resources>
  <connections/>
 </ui>
