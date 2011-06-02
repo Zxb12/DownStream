@@ -76,6 +76,7 @@ void InfoExtractor::reply()
     {
         sLog->out("InfoExtractor::reply() réponse de taille nulle");
         m_queue.enqueue(m_url);
+        extractInfo();
         return;
     }
 
