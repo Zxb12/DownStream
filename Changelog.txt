@@ -1,5 +1,14 @@
 DownStream Changelog
 
+1.3
+- Fix: Reprise d'un téléchargement déjà terminé
+- Possibilité d'ajouter plusieurs liens à la fois
+- Système de log pour aider au débug. Joindre le fichier log.log du dossier
+  d'exécution de DownStream aux rapports de bugs !
+- Affichage d'informations sur les téléchargements dans la liste
+- Ajout d'un bouton Détails
+- Possibilité de déplacer ses téléchargements dans la file d'attente
+
 1.2
 - Fix: téléchargements de fichiers avec des caractères spéciaux
 - Erreur de téléchargement si aucune donnée n'a été reçue en 15 secondes
