@@ -1,24 +1,24 @@
-DownStream Changelog
+ï»¿DownStream Changelog
 
 1.3
-- Fix: Reprise d'un téléchargement déjà terminé
-- Possibilité d'ajouter plusieurs liens à la fois
-- Système de log pour aider au débug. Joindre le fichier log.log du dossier
-  d'exécution de DownStream aux rapports de bugs !
-- Affichage d'informations sur les téléchargements dans la liste
-- Ajout d'un bouton Détails
-- Possibilité de déplacer ses téléchargements dans la file d'attente
+- Fix: Reprise d'un tÃ©lÃ©chargement dÃ©jÃ  terminÃ©
+- PossibilitÃ© d'ajouter plusieurs liens Ã  la fois
+- SystÃ¨me de log pour aider au dÃ©bug. Joindre le fichier log.log du dossier
+  d'exÃ©cution de DownStream aux rapports de bugs !
+- Affichage d'informations sur les tÃ©lÃ©chargements dans la liste
+- Ajout d'un bouton DÃ©tails
+- PossibilitÃ© de dÃ©placer ses tÃ©lÃ©chargements dans la file d'attente
 
 1.2
-- Fix: téléchargements de fichiers avec des caractères spéciaux
-- Erreur de téléchargement si aucune donnée n'a été reçue en 15 secondes
+- Fix: tÃ©lÃ©chargements de fichiers avec des caractÃ¨res spÃ©ciaux
+- Erreur de tÃ©lÃ©chargement si aucune donnÃ©e n'a Ã©tÃ© reÃ§ue en 15 secondes
 
 1.1
-- Fix: reprise des téléchargements après une erreur (arrêt/limite dépassée/...)
-- Fix: affichage de la vitesse après une reprise de téléchargement
-- Affichage de la version du programme dans la fenêtre principale
+- Fix: reprise des tÃ©lÃ©chargements aprÃ¨s une erreur (arrÃªt/limite dÃ©passÃ©e/...)
+- Fix: affichage de la vitesse aprÃ¨s une reprise de tÃ©lÃ©chargement
+- Affichage de la version du programme dans la fenÃªtre principale
 - Traduction de quelques boutons
-- Création d'un système d'alertes de mises à jour
+- CrÃ©ation d'un systÃ¨me d'alertes de mises Ã  jour
 
 1.0
 - Release initial
