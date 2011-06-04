@@ -67,7 +67,7 @@ void FenPrincipale::on_btn_ajouter_clicked()
 {
     QStringList newUrls = ui->adresse->text().simplified().split(' ', QString::SkipEmptyParts);
     QStringList urls;
-    foreach(DownloadItem info, m_adresses)
+    foreach(DownloadInfo info, m_adresses)
     {
         urls << info.url;
     }
@@ -165,7 +165,7 @@ void FenPrincipale::on_liste_currentRowChanged(int row)
 {
     if (row >= 0)
     {
-        DownloadItem item = m_adresses[row];
+        DownloadInfo item = m_adresses[row];
         ui->nomFichier->setText(item.name);
         ui->description->setText(item.description);
         ui->taille->setText(item.size);
@@ -192,7 +192,7 @@ void FenPrincipale::clipboardChange()
 {
     QStringList clipboard = QApplication::clipboard()->text().simplified().split(' ');
     QStringList urls, newUrls;
-    foreach(DownloadItem info, m_adresses)
+    foreach(DownloadInfo info, m_adresses)
     {
         urls << info.url;
     }
@@ -233,12 +233,12 @@ void FenPrincipale::infoAvailable(QString url, QString name, QString description
 {
     for (int i = 0; i < m_adresses.size(); i++)
     {
-        DownloadItem &downloadItem = m_adresses[i];
-        if (downloadItem.url == url)
+        DownloadInfo &downloadInfo = m_adresses[i];
+        if (downloadInfo.url == url)
         {
-            downloadItem.name = name;
-            downloadItem.description = description;
-            downloadItem.size = size;
+            downloadInfo.name = name;
+            downloadInfo.description = description;
+            downloadInfo.size = size;
             renameItem(url, name, "Description: " + description + "\nLien: " + url);
 
             if (ui->lienMegaupload->text() == url)  //Actualisation des infos si les détails de l'item sont affichés
@@ -266,9 +266,9 @@ void FenPrincipale::saveSettings()
     QStringList links;
     if (!m_currentDownload.url.isEmpty())
         links << m_currentDownload.url;
-    foreach(DownloadItem item, m_adresses)
+    foreach(DownloadInfo info, m_adresses)
     {
-        links << item.url;
+        links << info.url;
     }
 
     QSettings settings(APP_NAME, APP_ORGANIZATION);
