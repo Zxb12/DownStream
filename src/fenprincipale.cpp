@@ -86,9 +86,12 @@ void FenPrincipale::on_btn_ajouter_clicked()
 
 void FenPrincipale::on_btn_supprimer_clicked()
 {
-    int row = ui->liste->currentRow();
-    if (row >= 0)
-        removeItem(row);
+    QList<QListWidgetItem *> selection = ui->liste->selectedItems();
+    for (int i = m_adresses.size() - 1; i >= 0; i--)
+    {
+        if (selection.contains(m_adresses[i].item))
+            removeItem(i);
+    }
 }
 
 void FenPrincipale::on_btn_monter_clicked()
