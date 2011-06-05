@@ -63,7 +63,8 @@ void InfoExtractor::reply()
         emit infoUnavailable(m_url, true);
         m_reply->close();
         m_reply = NULL;
-        extractInfo();
+        if (!m_queue.isEmpty())
+            extractInfo();
         return;
     }
 
