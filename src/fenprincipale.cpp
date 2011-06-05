@@ -161,7 +161,7 @@ void FenPrincipale::on_btn_details_toggled(bool visible)
     setDetailsVisible(visible);
 }
 
-void FenPrincipale::on_options_clicked()
+void FenPrincipale::on_btn_options_clicked()
 {
     m_fenOptions = new FenOptions(this, &m_dir, &m_login, &m_password);
     connect(m_fenOptions, SIGNAL(accepted()), this, SLOT(settingsChanged()));
@@ -302,7 +302,7 @@ void FenPrincipale::loadSettings()
     if (settings.value("firstRun", true).toBool())
     {
         QMessageBox::information(this, APP_NAME, "Ceci est le premier lancement de l'application. Veuillez entrer vos paramètres !");
-        on_options_clicked();
+        on_btn_options_clicked();
     }
 }
 

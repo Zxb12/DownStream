@@ -53,7 +53,7 @@ private slots:
     void on_btn_go_clicked();
     void on_btn_arreter_clicked();
     void on_btn_details_toggled(bool);
-    void on_options_clicked();
+    void on_btn_options_clicked();
     void on_liste_currentRowChanged(int);
     void console(QString);
     void clipboardChange();

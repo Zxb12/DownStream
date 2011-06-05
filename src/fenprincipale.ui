@@ -223,7 +223,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="options">
+       <widget class="QPushButton" name="btn_options">
         <property name="text">
          <string>Options</string>
         </property>
