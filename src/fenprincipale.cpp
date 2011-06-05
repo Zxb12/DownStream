@@ -104,6 +104,7 @@ void FenPrincipale::on_btn_monter_clicked()
             rows << i;
     }
 
+    ui->liste->hide();  //On cache la liste pour améliorer les performances du traitement
     if (!rows.isEmpty() && rows.first() > 0)
     {
         foreach(int row, rows)
@@ -112,6 +113,7 @@ void FenPrincipale::on_btn_monter_clicked()
             ui->liste->setCurrentRow(row - 1, QItemSelectionModel::Select);
         }
     }
+    ui->liste->show();
 }
 
 void FenPrincipale::on_btn_descendre_clicked()
@@ -124,6 +126,7 @@ void FenPrincipale::on_btn_descendre_clicked()
             rows << i;
     }
 
+    ui->liste->hide();  //On cache la liste pour améliorer les performances du traitement
     if (!rows.isEmpty() && rows.first() < m_adresses.size() - 1)
     {
         foreach(int row, rows)
@@ -132,6 +135,7 @@ void FenPrincipale::on_btn_descendre_clicked()
             ui->liste->setCurrentRow(row + 1, QItemSelectionModel::Select);
         }
     }
+    ui->liste->show();
 }
 
 void FenPrincipale::on_btn_go_clicked()
