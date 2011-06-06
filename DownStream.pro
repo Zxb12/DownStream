@@ -42,6 +42,8 @@ FORMS    += src/fenprincipale.ui \
 RESOURCES += \
     res/ressource.qrc
 
+RC_FILE = res/ressource.rc
+
 OTHER_FILES += \
     TODO.txt \
     Changelog.txt

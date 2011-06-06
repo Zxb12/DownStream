@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="icon">download_manager.png</file>
+        <file alias="icon">DownStream.png</file>
     </qresource>
 </RCC>
