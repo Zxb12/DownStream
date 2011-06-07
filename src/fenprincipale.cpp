@@ -7,15 +7,29 @@
 #include <QCloseEvent>
 
 FenPrincipale::FenPrincipale(QWidget *parent) :
-    QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
+    QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_trayWarningShown(false), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
     m_infoExtractor(new InfoExtractor(this)), m_vitesseTransfert(new VitesseTransfert(this, DOWNLOAD_SPEED_UPDATE_INTERVAL, DOWNLOAD_SPEED_AVERAGE_TIME)),
     m_versionCheck(new VersionCheckThread(this, VERSION_HOST, APP_NAME, VERSION, VERSION_NBR)), m_currentDownload(), m_waitTimer(new QTimer(this)),
     m_updateDownloadTimer(new QTimer(this)), m_waitTime(0), m_isDownloading(false)
 {
     ui->setupUi(this);
     setWindowTitle(APP_NAME " - v" VERSION);
+
+    //Icône système
+    m_menu = new QMenu(this);
+    m_retablirAction = new QAction("Rétablir", m_menu);
+    m_startAction = new QAction("Télécharger", m_menu);
+    m_stopAction = new QAction("Arrêter", m_menu);
     m_tray = new QSystemTrayIcon(windowIcon(), this);
+
+    m_menu->addAction(m_retablirAction);
+    m_menu->addAction(m_startAction);
+    m_menu->addAction(m_stopAction);
+    m_retablirAction->setVisible(false);
+    m_stopAction->setVisible(false);
+    m_tray->setContextMenu(m_menu);
     m_tray->show();
+
     qApp->setActiveWindow(this);
     loadSettings();
 
@@ -26,6 +40,10 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_infoExtractor, SIGNAL(infoUnavailable(QString,bool)), this, SLOT(infoUnavailable(QString,bool)));
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
     connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
+    connect(m_tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
+    connect(m_retablirAction, SIGNAL(triggered()), this, SLOT(show()));
+    connect(m_startAction, SIGNAL(triggered()), this, SLOT(on_btn_go_clicked()));
+    connect(m_stopAction, SIGNAL(triggered()), this, SLOT(on_btn_arreter_clicked()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
 
     //Téléchargement
@@ -150,6 +168,8 @@ void FenPrincipale::on_btn_arreter_clicked()
     m_handler->stopDownload();
     m_updateDownloadTimer->stop();
     m_waitTimer->stop();
+    m_startAction->setVisible(true);
+    m_stopAction->setVisible(false);
 
     ui->progression->reset();
     ui->btn_go->show();
@@ -190,6 +210,8 @@ void FenPrincipale::on_liste_currentRowChanged(int row)
 void FenPrincipale::console(QString out)
 {
     ui->statusBar->showMessage(out);
+    m_tray->setToolTip(APP_NAME "\n"
+                       "Dernier message: " + out);
 
     if (!qApp->focusWidget())
         m_tray->showMessage(APP_NAME, out);
@@ -266,6 +288,15 @@ void FenPrincipale::infoUnavailable(QString url, bool temporary)
         renameItem(url, "Fichier temporairement indisponible (" + url + ")");
     else
         renameItem(url, "Fichier supprimé (" + url + ")");
+}
+
+void FenPrincipale::trayClicked(QSystemTrayIcon::ActivationReason reason)
+{
+    if (reason == QSystemTrayIcon::DoubleClick)
+    {
+        show();
+        m_retablirAction->setVisible(false);
+    }
 }
 
 void FenPrincipale::saveSettings()
@@ -377,6 +408,8 @@ void FenPrincipale::startNextDownload()
 
         ui->btn_go->hide();
         ui->btn_arreter->show();
+        m_startAction->setVisible(false);
+        m_stopAction->setVisible(true);
 
         m_handler->setDir(m_dir);
         m_handler->download(m_currentDownload.url);
@@ -390,6 +423,8 @@ void FenPrincipale::startNextDownload()
         ui->btn_go->show();
         ui->progression->setValue(0);
         ui->progression->setFormat("");
+        m_startAction->setVisible(true);
+        m_stopAction->setVisible(false);
 
         m_vitesseTransfert->stop();
         m_updateDownloadTimer->stop();
@@ -556,9 +591,31 @@ void FenPrincipale::closeEvent(QCloseEvent *event)
 {
     saveSettings();
     m_handler->stopDownload();
-    event->accept();
     if (m_versionCheck->isRunning())
         m_versionCheck->terminate();
+    event->accept();
+}
+
+void FenPrincipale::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::ActivationChange && windowState() & Qt::WindowMinimized && isVisible())
+    {
+        if (!m_trayWarningShown)
+        {
+            m_tray->showMessage(APP_NAME, "DownStream a été réduit dans la barre des tâches.\n"
+                                "Double-cliquez l'icône pour le rétablir.");
+            m_trayWarningShown = true;
+        }
+
+        m_retablirAction->setVisible(true);
+        hide();
+
+        event->accept();
+    }
+    else
+    {
+        QMainWindow::changeEvent(event);
+    }
 }
 
 bool FenPrincipale::isMegauploadUrl(const QString &url)

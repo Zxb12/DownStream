@@ -10,6 +10,7 @@
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
+#include <QMenu>
 #include <QClipboard>
 
 namespace Ui
@@ -61,6 +62,7 @@ private slots:
     void updateAvailable(QString, QString);
     void infoAvailable(QString, QString, QString, QString);
     void infoUnavailable(QString, bool);
+    void trayClicked(QSystemTrayIcon::ActivationReason);
 
     //Options
     void saveSettings();
@@ -89,6 +91,7 @@ private:
     void moveItem(int i, int j);
 
     void closeEvent(QCloseEvent *event);
+    void changeEvent(QEvent *event);
     bool isMegauploadUrl(const QString &url);
     void setDetailsVisible(bool visible);
     static QString sizeToString(quint64 size);
@@ -98,6 +101,9 @@ private:
     Ui::FenPrincipale *ui;
     FenOptions *m_fenOptions;
     QSystemTrayIcon *m_tray;
+    QMenu *m_menu;
+    QAction *m_retablirAction, *m_startAction, *m_stopAction;
+    bool m_trayWarningShown;
 
     //Données persistantes
     QList<DownloadItem> m_adresses;
