@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QShortcut>
 
 FenPrincipale::FenPrincipale(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::FenPrincipale), m_fenOptions(NULL), m_trayWarningShown(false), m_auth(new Auth(this)), m_handler(new DownloadHandler(this)),
@@ -20,11 +21,13 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     m_retablirAction = new QAction("Rétablir", m_menu);
     m_startAction = new QAction("Télécharger", m_menu);
     m_stopAction = new QAction("Arrêter", m_menu);
+    m_quitterAction = new QAction("Quitter", m_menu);
     m_tray = new QSystemTrayIcon(windowIcon(), this);
 
     m_menu->addAction(m_retablirAction);
     m_menu->addAction(m_startAction);
     m_menu->addAction(m_stopAction);
+    m_menu->addAction(m_quitterAction);
     m_retablirAction->setVisible(false);
     m_stopAction->setVisible(false);
     m_tray->setContextMenu(m_menu);
@@ -44,6 +47,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_retablirAction, SIGNAL(triggered()), this, SLOT(retablir()));
     connect(m_startAction, SIGNAL(triggered()), this, SLOT(on_btn_go_clicked()));
     connect(m_stopAction, SIGNAL(triggered()), this, SLOT(on_btn_arreter_clicked()));
+    connect(m_quitterAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
 
     //Téléchargement
@@ -69,6 +73,11 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
 
 FenPrincipale::~FenPrincipale()
 {
+    saveSettings();
+    m_handler->stopDownload();
+    if (m_versionCheck->isRunning())
+        m_versionCheck->terminate();
+
     delete ui;
     delete m_auth;
     delete m_handler;
@@ -595,33 +604,17 @@ void FenPrincipale::moveItem(int i, int j)
 
 void FenPrincipale::closeEvent(QCloseEvent *event)
 {
-    saveSettings();
-    m_handler->stopDownload();
-    if (m_versionCheck->isRunning())
-        m_versionCheck->terminate();
-    event->accept();
-}
-
-void FenPrincipale::changeEvent(QEvent *event)
-{
-    if (event->type() == QEvent::ActivationChange && windowState() & Qt::WindowMinimized && isVisible())
+    if (!m_trayWarningShown)
     {
-        if (!m_trayWarningShown)
-        {
-            m_tray->showMessage(APP_NAME, "DownStream a été réduit dans la barre des tâches.\n"
-                                "Double-cliquez l'icône pour le rétablir.");
-            m_trayWarningShown = true;
-        }
-
-        m_retablirAction->setVisible(true);
-        hide();
-
-        event->accept();
+        m_tray->showMessage(APP_NAME, "DownStream a été réduit dans la barre des tâches.\n"
+                            "Faites un clic droit sur l'icône pour ouvrir le menu.");
+        m_trayWarningShown = true;
     }
-    else
-    {
-        QMainWindow::changeEvent(event);
-    }
+
+    m_retablirAction->setVisible(true);
+    hide();
+
+    event->ignore();
 }
 
 bool FenPrincipale::isMegauploadUrl(const QString &url)
