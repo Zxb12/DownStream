@@ -41,7 +41,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
     connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
     connect(m_tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
-    connect(m_retablirAction, SIGNAL(triggered()), this, SLOT(show()));
+    connect(m_retablirAction, SIGNAL(triggered()), this, SLOT(retablir()));
     connect(m_startAction, SIGNAL(triggered()), this, SLOT(on_btn_go_clicked()));
     connect(m_stopAction, SIGNAL(triggered()), this, SLOT(on_btn_arreter_clicked()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
@@ -294,9 +294,14 @@ void FenPrincipale::trayClicked(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::DoubleClick)
     {
-        show();
-        m_retablirAction->setVisible(false);
+        retablir();
     }
+}
+
+void FenPrincipale::retablir()
+{
+    show();
+    m_retablirAction->setVisible(false);
 }
 
 void FenPrincipale::saveSettings()
@@ -557,6 +562,7 @@ void FenPrincipale::removeItem(const int &row)
     Q_ASSERT(row >= 0);
     QListWidgetItem *item = m_adresses[row].item;
     ui->liste->removeItemWidget(item);
+    m_infoExtractor->remove(m_adresses[row].url);
     m_adresses.removeAt(row);
     delete item;
 }

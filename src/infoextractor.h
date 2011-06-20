@@ -22,6 +22,7 @@ public:
     ~InfoExtractor();
 
     void queue(const QString &url);
+    void remove(const QString &url);
 
 signals:
     void infoAvailable(QString, QString, QString, QString);

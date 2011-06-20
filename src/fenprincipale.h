@@ -63,6 +63,7 @@ private slots:
     void infoAvailable(QString, QString, QString, QString);
     void infoUnavailable(QString, bool);
     void trayClicked(QSystemTrayIcon::ActivationReason);
+    void retablir();
 
     //Options
     void saveSettings();

@@ -37,6 +37,11 @@ void InfoExtractor::queue(const QString &url)
         extractInfo();
 }
 
+void InfoExtractor::remove(const QString &url)
+{
+    m_queue.removeOne(url);
+}
+
 void InfoExtractor::extractInfo()
 {
     Q_ASSERT(!m_queue.isEmpty());
