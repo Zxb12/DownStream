@@ -1,5 +1,21 @@
 ﻿DownStream Changelog
 
+1.4
+- Fix: 3 crashs rares
+- Fix: affichage du bouton Rétablir dans le menu de l'icône
+- Suppression de tous les liens sélectionnés lors du clic sur -
+- Optimisation des performances lors du changement de position de liens
+- Ajout de l'icône à l'exécutable
+- DownStream est réduit dans la barre des tâches lors du clic sur la croix,
+  il est possible d'arrêter DownStream en enfonçant Maj ou Ctrl lors du clic
+  sur la croix ou grâce au menu de l'icône.
+- Ajout de raccourcis :
+    - Ctrl+D Affiche/cache les détails
+    - Ctrl+Q Quitte DownStream
+    - Ctrl+Haut et Ctrl+Maj+Haut Monte les liens sélectionnés dans la file
+    - Ctrl+Bas et Ctrl+Maj+Bas Descend les liens sélectionnés dans la file
+    - Suppr Supprime les liens sélectionnés
+
 1.3
 - Fix: Reprise d'un téléchargement déjà terminé
 - Possibilité d'ajouter plusieurs liens à la fois
