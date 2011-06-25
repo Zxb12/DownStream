@@ -50,6 +50,13 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(m_quitterAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChange()));
 
+    //Raccourcis
+    connect(new QShortcut(QKeySequence("Ctrl+Q"), this), SIGNAL(activated()), qApp, SLOT(quit()));
+    connect(new QShortcut(QKeySequence("Ctrl+D"), this), SIGNAL(activated()), ui->btn_details, SLOT(toggle()));
+    connect(new QShortcut(QKeySequence("Ctrl+Up"), this), SIGNAL(activated()), this, SLOT(on_btn_monter_clicked()));
+    connect(new QShortcut(QKeySequence("Ctrl+Down"), this), SIGNAL(activated()), this, SLOT(on_btn_descendre_clicked()));
+    connect(new QShortcut(QKeySequence("Del"), this), SIGNAL(activated()), this, SLOT(on_btn_supprimer_clicked()));
+
     //Téléchargement
     connect(m_auth, SIGNAL(authed(AuthInfo)), this, SLOT(authSuccess(AuthInfo)));
     connect(m_auth, SIGNAL(authError(AuthError)), this, SLOT(authFail(AuthError)));
