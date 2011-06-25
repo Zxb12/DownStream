@@ -54,7 +54,9 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(new QShortcut(QKeySequence("Ctrl+Q"), this), SIGNAL(activated()), qApp, SLOT(quit()));
     connect(new QShortcut(QKeySequence("Ctrl+D"), this), SIGNAL(activated()), ui->btn_details, SLOT(toggle()));
     connect(new QShortcut(QKeySequence("Ctrl+Up"), this), SIGNAL(activated()), this, SLOT(on_btn_monter_clicked()));
+    connect(new QShortcut(QKeySequence("Ctrl+Shift+Up"), this), SIGNAL(activated()), this, SLOT(on_btn_monter_clicked()));
     connect(new QShortcut(QKeySequence("Ctrl+Down"), this), SIGNAL(activated()), this, SLOT(on_btn_descendre_clicked()));
+    connect(new QShortcut(QKeySequence("Ctrl+Shift+Down"), this), SIGNAL(activated()), this, SLOT(on_btn_descendre_clicked()));
     connect(new QShortcut(QKeySequence("Del"), this), SIGNAL(activated()), this, SLOT(on_btn_supprimer_clicked()));
 
     //Téléchargement
