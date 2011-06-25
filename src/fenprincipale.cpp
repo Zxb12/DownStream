@@ -208,7 +208,7 @@ void FenPrincipale::on_btn_options_clicked()
 
 void FenPrincipale::on_liste_currentRowChanged(int row)
 {
-    if (row >= 0)
+    if (row >= 0 && row < m_adresses.size())
     {
         DownloadInfo item = m_adresses[row];
         ui->nomFichier->setText(item.name);
