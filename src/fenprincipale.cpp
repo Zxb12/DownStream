@@ -613,6 +613,9 @@ void FenPrincipale::moveItem(int i, int j)
 
 void FenPrincipale::closeEvent(QCloseEvent *event)
 {
+    if (QApplication::keyboardModifiers() & (Qt::ShiftModifier | Qt::ControlModifier))
+        qApp->quit();
+
     if (!m_trayWarningShown)
     {
         m_tray->showMessage(APP_NAME, "DownStream a été réduit dans la barre des tâches.\n"
