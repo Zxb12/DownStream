@@ -88,7 +88,7 @@ void InfoExtractor::reply()
 
     //Extraction des données
     QString fileName, fileDescription, fileSize;
-    QStringList splitData = data.split('\n');
+    QStringList splitData = data.split('\n', QString::SkipEmptyParts);
     foreach(QString lineData, splitData)
     {
         if (lineData.startsWith(FILE_NAME))
@@ -108,7 +108,7 @@ void InfoExtractor::reply()
 
     if (fileName.isEmpty())
     {
-        sLog->out("InfoExtractor::reply() Lien non trouvé. Erreur: %1, données: %1", m_reply->errorString(), data);
+        sLog->out("InfoExtractor::reply() Lien non trouvé. Données: %1", data);
         emit infoUnavailable(m_url, false);
         return;
     }
