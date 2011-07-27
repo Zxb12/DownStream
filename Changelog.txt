@@ -1,5 +1,11 @@
 ﻿DownStream Changelog
 
+1.5
+- Fix: crash lors de la récupération d'infos sur un lien effacé
+- Sauvegarde des paramètres du programme après ajout/suppression/fin de
+  téléchargement d'un lien. Plus aucune donnée importante n'est perdue lors
+  d'un crash ou d'un kill de DownStream.
+
 1.4
 - Fix: 3 crashs rares
 - Fix: affichage du bouton Rétablir dans le menu de l'icône
