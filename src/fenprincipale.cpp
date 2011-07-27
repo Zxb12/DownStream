@@ -118,6 +118,9 @@ void FenPrincipale::on_btn_ajouter_clicked()
 
     ui->adresse->clear();
     ui->adresse->setFocus();
+
+    //Sauvegarde des liens
+    saveSettings();
 }
 
 void FenPrincipale::on_btn_supprimer_clicked()
@@ -128,6 +131,9 @@ void FenPrincipale::on_btn_supprimer_clicked()
         if (selection.contains(m_adresses[i].item))
             removeItem(i);
     }
+
+    //Sauvegarde des liens
+    saveSettings();
 }
 
 void FenPrincipale::on_btn_monter_clicked()
@@ -484,6 +490,9 @@ void FenPrincipale::downloadComplete()
     m_isDownloading = false;
     m_currentDownload.clear();
     startNextDownload();
+
+    //Sauvegarde des liens
+    saveSettings();
 }
 
 void FenPrincipale::error(DownloadError error)
