@@ -10,10 +10,6 @@
 #include <QNetworkCookieJar>
 #include <QUrl>
 
-#define FILE_NAME        "File name: "
-#define FILE_DESCRIPTION "File description: "
-#define FILE_SIZE        "File size: "
-
 class InfoExtractor : public QObject
 {
     Q_OBJECT

@@ -508,6 +508,16 @@ void FenPrincipale::error(DownloadError error)
     case LINK_NOT_FOUND:
     {
         console("Erreur: lien de téléchargement non trouvé (lien invalide ou supprimé) pour " + m_currentDownload.printableName());
+        addItem(m_currentDownload.url);
+        m_currentDownload.url.clear();
+        startNextDownload();
+        break;
+    }
+    case PASSWORD_REQUIRED:
+    {
+        console("Erreur: le fichier à télécharger est protégé par mot de passe !");
+        addItem(m_currentDownload.url);
+        m_currentDownload.url.clear();
         startNextDownload();
         break;
     }

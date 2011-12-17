@@ -95,13 +95,13 @@ void DownloadHandler::downloadError(DownloadError err)
     case LINK_NOT_FOUND:
     case LINK_NETWORK_ERROR:
         wait(RETRY_TIMER, BEFORE_NEXT_TRY, SLOT(restartLinkExtraction()));
-
+        break;
     default:
         break;
     }
 }
 
-void DownloadHandler::wait(const int& time, const QString &msg, const char *slot)
+void DownloadHandler::wait(int time, const QString &msg, const char *slot)
 {
     m_timer->stop();
     m_timer->disconnect(this);  //Déconnexion de tous les slots

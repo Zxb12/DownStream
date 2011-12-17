@@ -58,7 +58,6 @@ void Auth::reply()
         return;
     }
 
-
     //Préparation de la structure
     m_cookieJar->setCookiesFromUrl(liste, MEGAUPLOAD);
     AuthInfo authInfo = {m_authLevel, m_cookieJar};

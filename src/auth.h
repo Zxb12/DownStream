@@ -20,7 +20,7 @@ class Auth : public QObject
 public:
     explicit Auth(QObject *parent = 0);
 
-    void login (const QByteArray& login, const QByteArray& password);
+    void login(const QByteArray& login, const QByteArray& password);
 
 private slots:
     void reply();

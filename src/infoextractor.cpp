@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QRegExp>
 #include <QTextDocumentFragment>
+#include <QDebug>
 
 InfoExtractor::InfoExtractor(QObject *parent) :
     QObject(parent), m_queue(), m_url(), m_replyTimer(new QTimer(this)),
@@ -27,7 +28,9 @@ InfoExtractor::InfoExtractor(QObject *parent) :
 InfoExtractor::~InfoExtractor()
 {
     if (m_reply)
+    {
         m_reply->abort();
+    }
 }
 
 void InfoExtractor::queue(const QString &url)
@@ -67,7 +70,6 @@ void InfoExtractor::reply()
         }
         emit infoUnavailable(m_url, true);
         m_reply->close();
-        m_reply = NULL;
         if (!m_queue.isEmpty())
             extractInfo();
         return;
@@ -76,7 +78,6 @@ void InfoExtractor::reply()
     //Extraction des données de la réponse
     QString data = QTextDocumentFragment::fromHtml(m_reply->readAll()).toPlainText(); //Interprétation HTML
     m_reply->close();
-    m_reply = NULL;
 
     if (data.isEmpty())
     {
@@ -86,30 +87,35 @@ void InfoExtractor::reply()
         return;
     }
 
+    if (data.contains(FILE_DELETED))
+    {
+        emit infoUnavailable(m_url, false);
+        extractInfo();
+        return;
+    }
+
     //Extraction des données
     QString fileName, fileDescription, fileSize;
-    QStringList splitData = data.split('\n', QString::SkipEmptyParts);
-    foreach(QString lineData, splitData)
+    QStringList splitData = data.split("\n", QString::SkipEmptyParts);
+    if (splitData.size() > 4)
     {
-        if (lineData.startsWith(FILE_NAME))
-            fileName = lineData.remove(FILE_NAME);
-        else if (lineData.startsWith(FILE_DESCRIPTION))
-            fileDescription = lineData.remove(FILE_DESCRIPTION);
-        else if (lineData.startsWith(FILE_SIZE))
-            fileSize = lineData.remove(FILE_SIZE);
-        else if (lineData.startsWith(FILE_TEMPORARILY_UNAVAILABLE))
-        {
-            emit infoUnavailable(m_url, true);
-            m_queue.enqueue(m_url);
-            extractInfo();
-            return;
-        }
+        fileName = splitData[2].remove(-1, 1);
+        fileSize = splitData[3].remove(-1, 1);
+        fileDescription = splitData[4].remove("File description: ").remove(-1, 1);
+    }
+    else
+    {
+        emit infoUnavailable(m_url, true);
+        m_queue.enqueue(m_url);
+        extractInfo();
+        return;
     }
 
     if (fileName.isEmpty())
     {
         sLog->out("InfoExtractor::reply() Lien non trouvé. Données: %1", data);
         emit infoUnavailable(m_url, false);
+        extractInfo();
         return;
     }
 
@@ -124,5 +130,9 @@ void InfoExtractor::replyTimeout()
     m_replyTimer->stop();
 
     if (m_reply)
+    {
         m_reply->abort();
+        delete m_reply;
+        m_reply = NULL;
+    }
 }

@@ -4,6 +4,7 @@
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QTextDocumentFragment>
+#include <QDebug>
 
 LinkExtractor::LinkExtractor(QObject *parent) :
     QObject(parent), m_accessManager(new QNetworkAccessManager(this)), m_reply(NULL)
@@ -45,16 +46,24 @@ void LinkExtractor::reply()
         m_reply = NULL;
         return;
     }
+
     //Extraction des données de la réponse
     QByteArray data = m_reply->readAll();
     m_reply->close();
     m_reply = NULL;
 
     //Extraction du lien
-    QRegExp regexp("http://www[0-9]*.megaupload.com/files/[^\"]*");
+    QRegExp regexp(LINK_EXTRACTION_REGEXP);
     if (regexp.indexIn(data) == -1)
     {
-        emit error(LINK_NOT_FOUND);
+        if (data.contains(LINK_EXTRACTION_NEED_PASSWORD))
+        {
+            emit error(PASSWORD_REQUIRED);
+        }
+        else
+        {
+            emit error(LINK_NOT_FOUND);
+        }
         return;
     }
 
