@@ -40,7 +40,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) :
     connect(ui->adresse, SIGNAL(returnPressed()), this, SLOT(on_btn_ajouter_clicked()));
     connect(m_waitTimer, SIGNAL(timeout()), this, SLOT(waitTimerTick()));
     connect(m_infoExtractor, SIGNAL(infoAvailable(QString,QString,QString,QString)), this, SLOT(infoAvailable(QString,QString,QString,QString)));
-    connect(m_infoExtractor, SIGNAL(infoUnavailable(QString,bool)), this, SLOT(infoUnavailable(QString,bool)));
+    connect(m_infoExtractor, SIGNAL(infoUnavailable(QString,ExtractionError)), this, SLOT(infoUnavailable(QString,ExtractionError)));
     connect(m_updateDownloadTimer, SIGNAL(timeout()), this, SLOT(updateDownloadTick()));
     connect(m_versionCheck, SIGNAL(update(QString, QString)), this, SLOT(updateAvailable(QString, QString)));
     connect(m_tray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayClicked(QSystemTrayIcon::ActivationReason)));
@@ -306,12 +306,24 @@ void FenPrincipale::infoAvailable(QString url, QString name, QString description
     }
 }
 
-void FenPrincipale::infoUnavailable(QString url, bool temporary)
+void FenPrincipale::infoUnavailable(QString url, ExtractionError erreur)
 {
-    if (temporary)
-        renameItem(url, "Fichier temporairement indisponible (" + url + ")");
-    else
+    switch(erreur)
+    {
+    case FILE_DELETED:
         renameItem(url, "Fichier supprimé (" + url + ")");
+        break;
+    case INVALID_DATA:
+        renameItem(url, "Données reçues invalides (" + url + ") - fichier protégé par mot de passe ?");
+        break;
+    case NETWORK_ERROR:
+        renameItem(url, "Erreur du réseau (" + url + ")");
+        break;
+    default:
+        renameItem(url, "Impossible d'extraire les infos (" + url + ")");
+        break;
+    }
+
 }
 
 void FenPrincipale::trayClicked(QSystemTrayIcon::ActivationReason reason)

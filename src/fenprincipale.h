@@ -61,7 +61,7 @@ private slots:
     void settingsChanged();
     void updateAvailable(QString, QString);
     void infoAvailable(QString, QString, QString, QString);
-    void infoUnavailable(QString, bool);
+    void infoUnavailable(QString, ExtractionError);
     void trayClicked(QSystemTrayIcon::ActivationReason);
     void retablir();
 

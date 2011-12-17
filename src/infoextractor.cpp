@@ -68,10 +68,10 @@ void InfoExtractor::reply()
         {
             sLog->out("InfoExtractor::reply() erreur: %1", m_reply->errorString());
         }
-        emit infoUnavailable(m_url, true);
+        emit infoUnavailable(m_url, NETWORK_ERROR);
         m_reply->close();
-        if (!m_queue.isEmpty())
-            extractInfo();
+        m_queue.enqueue(m_url);
+        extractInfo();
         return;
     }
 
@@ -87,10 +87,11 @@ void InfoExtractor::reply()
         return;
     }
 
-    if (data.contains(FILE_DELETED))
+    if (data.contains(FILE_DELETED_HINT))
     {
-        emit infoUnavailable(m_url, false);
-        extractInfo();
+        emit infoUnavailable(m_url, FILE_DELETED);
+        if (!m_queue.isEmpty())
+            extractInfo();
         return;
     }
 
@@ -105,7 +106,9 @@ void InfoExtractor::reply()
     }
     else
     {
-        emit infoUnavailable(m_url, true);
+        sLog->out("InfoExtractor::reply() Données incomplètes. Données: %1", data);
+        emit infoUnavailable(m_url, INVALID_DATA);
+        if (!m_queue.isEmpty())
         m_queue.enqueue(m_url);
         extractInfo();
         return;
@@ -114,8 +117,9 @@ void InfoExtractor::reply()
     if (fileName.isEmpty())
     {
         sLog->out("InfoExtractor::reply() Lien non trouvé. Données: %1", data);
-        emit infoUnavailable(m_url, false);
-        extractInfo();
+        emit infoUnavailable(m_url, FILE_DELETED);
+        if (!m_queue.isEmpty())
+            extractInfo();
         return;
     }
 
