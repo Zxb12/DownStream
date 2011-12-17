@@ -22,7 +22,8 @@ struct DownloadInfo
 {
     QString url, name, description, size;
 
-    QString printableName() { return name.isEmpty() ? url : name; }
+    DownloadInfo(const QString &_url = QString()) : url(_url), name(QString()), description(QString()), size(QString()) {}
+    QString printableName() const { return name.isEmpty() ? url : name; }
     void clear()
     {
         url.clear();
@@ -86,7 +87,7 @@ private slots:
 
 private:
     //Fonctions privées
-    void addItem(const QString &url);
+    void addItem(const DownloadInfo &info);
     void removeItem(const int &row);
     void renameItem(const QString &url, const QString &label, const QString &tip = QString());
     void moveItem(int i, int j);

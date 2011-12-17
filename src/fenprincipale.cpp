@@ -195,6 +195,13 @@ void FenPrincipale::on_btn_arreter_clicked()
     m_startAction->setVisible(true);
     m_stopAction->setVisible(false);
 
+    if (!m_currentDownload.url.isEmpty())
+    {
+        addItem(m_currentDownload);
+        moveItem(m_adresses.size() - 1, 0);
+        m_currentDownload.clear();
+    }
+
     ui->progression->reset();
     ui->btn_go->show();
     ui->btn_arreter->hide();
@@ -319,11 +326,13 @@ void FenPrincipale::infoUnavailable(QString url, ExtractionError erreur)
     case NETWORK_ERROR:
         renameItem(url, "Erreur du réseau (" + url + ")");
         break;
+    case TIMEOUT_ERROR:
+        renameItem(url, "Timeout de la récupération (" + url + ")");
+        break;
     default:
         renameItem(url, "Impossible d'extraire les infos (" + url + ")");
         break;
     }
-
 }
 
 void FenPrincipale::trayClicked(QSystemTrayIcon::ActivationReason reason)
@@ -590,20 +599,20 @@ void FenPrincipale::waitTimerTick()
         m_waitTimer->stop();
 }
 
-void FenPrincipale::addItem(const QString &url)
+void FenPrincipale::addItem(const DownloadInfo &info)
 {
-    QListWidgetItem *item = new QListWidgetItem(url);
+    QListWidgetItem *item = new QListWidgetItem(info.printableName());
 
     DownloadItem downloadItem;
-    downloadItem.url = url;
-    downloadItem.name = QString();
-    downloadItem.description = QString();
-    downloadItem.size = QString();
+    downloadItem.url = info.url;
+    downloadItem.name = info.name;
+    downloadItem.description = info.description;
+    downloadItem.size = info.size;
     downloadItem.item = item;
 
     m_adresses.push_back(downloadItem);
     ui->liste->addItem(item);
-    m_infoExtractor->queue(url);
+    m_infoExtractor->queue(info.url);
 }
 
 void FenPrincipale::removeItem(const int &row)

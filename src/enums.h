@@ -75,6 +75,7 @@ enum ExtractionError
     FILE_DELETED,
     INVALID_DATA,
     NETWORK_ERROR,
+    TIMEOUT_ERROR,
 };
 
 #endif // ENUMS_H

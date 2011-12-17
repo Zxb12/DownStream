@@ -30,13 +30,15 @@ InfoExtractor::~InfoExtractor()
     if (m_reply)
     {
         m_reply->abort();
+        delete m_reply;
+        m_reply = NULL;
     }
 }
 
 void InfoExtractor::queue(const QString &url)
 {
     m_queue.enqueue(url);
-    if (!m_reply)
+    if (!m_reply || !m_reply->isOpen())
         extractInfo();
 }
 
@@ -70,20 +72,22 @@ void InfoExtractor::reply()
         }
         emit infoUnavailable(m_url, NETWORK_ERROR);
         m_reply->close();
-        m_queue.enqueue(m_url);
-        extractInfo();
+        m_reply->deleteLater();
+        m_reply = NULL;
+        queue(m_url);
         return;
     }
 
     //Extraction des données de la réponse
     QString data = QTextDocumentFragment::fromHtml(m_reply->readAll()).toPlainText(); //Interprétation HTML
     m_reply->close();
+    m_reply->deleteLater();
+    m_reply = NULL;
 
     if (data.isEmpty())
     {
         sLog->out("InfoExtractor::reply() réponse de taille nulle");
-        m_queue.enqueue(m_url);
-        extractInfo();
+        queue(m_url);
         return;
     }
 
@@ -108,9 +112,7 @@ void InfoExtractor::reply()
     {
         sLog->out("InfoExtractor::reply() Données incomplètes. Données: %1", data);
         emit infoUnavailable(m_url, INVALID_DATA);
-        if (!m_queue.isEmpty())
-        m_queue.enqueue(m_url);
-        extractInfo();
+        queue(m_url);
         return;
     }
 
@@ -132,11 +134,15 @@ void InfoExtractor::replyTimeout()
 {
     sLog->out("InfoExtractor::replyTimeout()");
     m_replyTimer->stop();
+    m_reply->disconnect();
+    emit infoUnavailable(m_url, TIMEOUT_ERROR);
 
     if (m_reply)
     {
         m_reply->abort();
-        delete m_reply;
+        m_reply->deleteLater();
         m_reply = NULL;
     }
+
+    queue(m_url);
 }
