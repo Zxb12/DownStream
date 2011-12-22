@@ -9,7 +9,7 @@
 #define VERSION_HOST        "supversion.frugebul.tk"
 
 #define DOWNLOAD_BUFFER               256 * 1024  //Le buffer doit être plus grand que la page d'erreur renvoyée par Megaupload (limit exceeded...)
-#define DOWNLOAD_NO_RECV_TIMER        15
+#define DOWNLOAD_NO_RECV_TIMER        60
 #define DOWNLOAD_LIMIT_EXCEEDED       "<BODY>Download limit exceeded</BODY></HTML>"
 #define FILE_TEMP_UNAVAILABLE_HINT    "The file you are trying to access is temporarily unavailable. Please try again later."
 #define FILE_DELETED_HINT             "The file has been deleted because it was violating our Terms of service"
@@ -33,7 +33,7 @@
 enum AuthLevel
 {
     GUEST = 60, //secondes d'attente
-    USER = 59,
+    USER = 10,
     PREMIUM = 0,
 };
 
