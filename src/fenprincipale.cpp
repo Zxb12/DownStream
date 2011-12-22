@@ -537,8 +537,6 @@ void FenPrincipale::error(DownloadError error)
     case PASSWORD_REQUIRED:
     {
         console("Erreur: le fichier à télécharger est protégé par mot de passe !");
-        addItem(m_currentDownload.url);
-        m_currentDownload.url.clear();
         startNextDownload();
         break;
     }
@@ -601,18 +599,18 @@ void FenPrincipale::waitTimerTick()
 
 void FenPrincipale::addItem(const DownloadInfo &info)
 {
-    QListWidgetItem *item = new QListWidgetItem(info.printableName());
-
     DownloadItem downloadItem;
-    downloadItem.url = info.url;
+    downloadItem.url = info.url.startsWith("http://") ? info.url : "http://" + info.url;
     downloadItem.name = info.name;
     downloadItem.description = info.description;
     downloadItem.size = info.size;
+
+    QListWidgetItem *item = new QListWidgetItem(downloadItem.printableName());
     downloadItem.item = item;
 
     m_adresses.push_back(downloadItem);
     ui->liste->addItem(item);
-    m_infoExtractor->queue(info.url);
+    m_infoExtractor->queue(downloadItem.url);
 }
 
 void FenPrincipale::removeItem(const int &row)
