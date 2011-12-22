@@ -74,7 +74,8 @@ void InfoExtractor::reply()
         m_reply->close();
         m_reply->deleteLater();
         m_reply = NULL;
-        queue(m_url);
+        m_queue.enqueue(m_url);
+        QTimer::singleShot(1 * IN_MILLISECONDS, this, SLOT(extractInfo()));
         return;
     }
 
