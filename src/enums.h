@@ -11,8 +11,10 @@
 #define DOWNLOAD_BUFFER               256 * 1024  //Le buffer doit être plus grand que la page d'erreur renvoyée par Megaupload (limit exceeded...)
 #define DOWNLOAD_NO_RECV_TIMER        60
 #define DOWNLOAD_LIMIT_EXCEEDED       "<BODY>Download limit exceeded</BODY></HTML>"
+#define PREMIUM_ACCOUNT_NEEDED        "<a href=\"?c=premium\" class=\"download_l_buy\"></a>"
 #define FILE_TEMP_UNAVAILABLE_HINT    "The file you are trying to access is temporarily unavailable. Please try again later."
 #define FILE_DELETED_HINT             "The file has been deleted because it was violating our Terms of service"
+#define FILE_PASSWORD_PROTECTED_HINT  "The file you are trying to download is password protected"
 #define RETRY_TIMER                   10
 #define LIMIT_REACHED_TIMER           60
 
@@ -62,6 +64,7 @@ enum DownloadError
     LINK_NETWORK_ERROR,
     LINK_NOT_FOUND,
     PASSWORD_REQUIRED,
+    NEED_PREMIUM,
     FILE_COULD_NOT_BE_OPENED,
     FILE_CORRUPT_RESTART_DOWNLOAD,
     DOWNLOAD_LIMIT_REACHED,
@@ -73,6 +76,8 @@ enum DownloadError
 enum ExtractionError
 {
     FILE_DELETED,
+    PREMIUM_NEEDED,
+    FILE_PASSWORD_PROTECTED,
     INVALID_DATA,
     NETWORK_ERROR,
     TIMEOUT_ERROR,

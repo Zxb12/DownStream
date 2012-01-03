@@ -60,6 +60,10 @@ void LinkExtractor::reply()
         {
             emit error(PASSWORD_REQUIRED);
         }
+        else if (data.contains(PREMIUM_ACCOUNT_NEEDED))
+        {
+            emit error(NEED_PREMIUM);
+        }
         else
         {
             emit error(LINK_NOT_FOUND);
@@ -71,6 +75,5 @@ void LinkExtractor::reply()
     QUrl fileLink = QTextDocumentFragment::fromHtml(regexp.cap()).toPlainText();
 
     emit linkAvailable(fileLink);
-
 }
 

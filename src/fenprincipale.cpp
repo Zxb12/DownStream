@@ -320,6 +320,12 @@ void FenPrincipale::infoUnavailable(QString url, ExtractionError erreur)
     case FILE_DELETED:
         renameItem(url, "Fichier supprimé (" + url + ")");
         break;
+    case PREMIUM_NEEDED:
+        renameItem(url, "Compte premium requis pour télécharger ce fichier (" + url + ")");
+        break;
+    case FILE_PASSWORD_PROTECTED:
+        renameItem(url, "Fichier protégé par mot de passe (" + url + ")");
+        break;
     case INVALID_DATA:
         renameItem(url, "Données reçues invalides (" + url + ") - fichier protégé par mot de passe ?");
         break;
@@ -537,12 +543,22 @@ void FenPrincipale::error(DownloadError error)
     case PASSWORD_REQUIRED:
     {
         console("Erreur: le fichier à télécharger est protégé par mot de passe !");
+        m_currentDownload.clear();
+        startNextDownload();
+        break;
+    }
+    case NEED_PREMIUM:
+    {
+        console("Erreur: il faut un compte premium pour télécharger ce fichier");
+        m_currentDownload.clear();
         startNextDownload();
         break;
     }
     case FILE_COULD_NOT_BE_OPENED:
     {
         console("Erreur: le fichier de destination n'a pas pu être ouvert !");
+        m_currentDownload.clear();
+        startNextDownload();
         break;
     }
     case FILE_CORRUPT_RESTART_DOWNLOAD:

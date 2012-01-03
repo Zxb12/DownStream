@@ -80,7 +80,8 @@ void InfoExtractor::reply()
     }
 
     //Extraction des données de la réponse
-    QString data = QTextDocumentFragment::fromHtml(m_reply->readAll()).toPlainText(); //Interprétation HTML
+    QByteArray dataHTML = m_reply->readAll();
+    QString data = QTextDocumentFragment::fromHtml(dataHTML).toPlainText(); //Interprétation HTML
     m_reply->close();
     m_reply->deleteLater();
     m_reply = NULL;
@@ -95,6 +96,14 @@ void InfoExtractor::reply()
     if (data.contains(FILE_DELETED_HINT))
     {
         emit infoUnavailable(m_url, FILE_DELETED);
+        if (!m_queue.isEmpty())
+            extractInfo();
+        return;
+    }
+
+    if (dataHTML.contains(PREMIUM_ACCOUNT_NEEDED))
+    {
+        emit infoUnavailable(m_url, PREMIUM_NEEDED);
         if (!m_queue.isEmpty())
             extractInfo();
         return;
@@ -121,6 +130,15 @@ void InfoExtractor::reply()
     {
         sLog->out("InfoExtractor::reply() Lien non trouvé. Données: %1", data);
         emit infoUnavailable(m_url, FILE_DELETED);
+        if (!m_queue.isEmpty())
+            extractInfo();
+        return;
+    }
+
+    if (fileDescription == FILE_PASSWORD_PROTECTED_HINT)
+    {
+        sLog->out("InfoExtractor::reply() Fichier protégé par mot de passe");
+        emit infoUnavailable(m_url, FILE_PASSWORD_PROTECTED);
         if (!m_queue.isEmpty())
             extractInfo();
         return;
