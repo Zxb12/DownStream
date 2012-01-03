@@ -88,6 +88,7 @@ void Download::startDownload(const QUrl &url)
     QNetworkRequest req(m_url);
     req.setRawHeader("Range", "bytes=" + QByteArray::number(m_startPos) + "-");
     m_reply = m_accessManager->get(req);
+    m_timer->start();
 
     connect(m_reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(recvData(qint64, qint64)));
     connect(m_reply, SIGNAL(finished()), this, SLOT(downloadFinished()));
