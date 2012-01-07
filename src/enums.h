@@ -3,8 +3,8 @@
 
 #define APP_NAME            "DownStream"
 #define APP_ORGANIZATION    "Camille Maller"
-#define VERSION             "1.5"
-#define VERSION_NBR         6
+#define VERSION             "1.6"
+#define VERSION_NBR         7
 
 #define VERSION_HOST        "supversion.frugebul.tk"
 
@@ -34,7 +34,7 @@
 
 enum AuthLevel
 {
-    GUEST = 60, //secondes d'attente
+    GUEST = 15, //secondes d'attente
     USER = 10,
     PREMIUM = 0,
 };

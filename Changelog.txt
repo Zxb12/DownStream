@@ -1,5 +1,18 @@
 ﻿DownStream Changelog
 
+1.6
+- Fix: fuites mémoire
+- Fix: utilisation des liens sans préfixe http://
+- Fix: timeout de téléchargement avant la réception de données
+- Compatibilité avec la nouvelle version de Megaupload !
+- Réduction des temps d'attente (peuvent ne pas être identiques à ceux de
+  Megaupload)
+- L'extraction d'informations affiche des informations plus pertinentes en cas
+  d'erreur sur le fichier
+- Timeout pour l'extraction d'infos et timer en cas d'erreur de connexion
+- Augmentation du timeout de connexion d'un téléchargement en cours à 1 minute
+- Meilleure gestion des erreurs type Fichier protégé par mot de passe et Compte Premium requis
+
 1.5
 - Fix: crash lors de la récupération d'infos sur un lien effacé
 - Sauvegarde des paramètres du programme après ajout/suppression/fin de
